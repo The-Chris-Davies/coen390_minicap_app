@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1083281067844",
+    "firebase_url": "https://minicapcollar.firebaseio.com",
+    "project_id": "minicapcollar",
+    "storage_bucket": "minicapcollar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083281067844:android:e786a13c6d7e7df8081111",
+        "android_client_info": {
+          "package_name": "com.minicap.collarapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1083281067844-k2lnb8j45jrqv2i8apkhq0u02drvc57l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKBc0aOa5afkVsgl5t4dl0HvZcIPJmkZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1083281067844-k2lnb8j45jrqv2i8apkhq0u02drvc57l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
