@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PositionActivity">
+    tools:context=".TemperatureActivity">
 
     <TableLayout
         android:layout_width="wrap_content"
@@ -19,15 +19,15 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/positionActivityLatitudeLabel"
+                android:id="@+id/temperatureActivityValuelabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:text="@string/latitude_label"
+                android:text="@string/temperature_label"
                 android:textSize="32sp" />
 
             <TextView
-                android:id="@+id/positionActivityLatitudeValue"
+                android:id="@+id/temperatureActivityValueValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="val"
@@ -39,27 +39,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/positionActivityLongitudeLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/longitude_label"
-                android:textSize="32sp" />
-
-            <TextView
-                android:id="@+id/positionActivityLongitudeValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="val"
-                android:textSize="32sp" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/positionActivityTimestampLabel"
+                android:id="@+id/temperatureActivityTimestampLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
@@ -67,7 +47,7 @@
                 android:textSize="32sp" />
 
             <TextView
-                android:id="@+id/positionActivityTimestampValue"
+                android:id="@+id/temperatureActivityTimestampValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="val"
