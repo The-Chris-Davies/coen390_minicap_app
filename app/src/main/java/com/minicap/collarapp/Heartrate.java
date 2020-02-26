@@ -2,7 +2,7 @@ package com.minicap.collarapp;
 
 import com.google.firebase.Timestamp;
 
-public class Heartrate implements Comparable<Temperature> {
+public class Heartrate implements Comparable<Heartrate> {
 
     Double value;
     Timestamp timestamp;
@@ -14,7 +14,7 @@ public class Heartrate implements Comparable<Temperature> {
 
     public Heartrate() {
         this.value = 0.0;
-        this.timestamp = new Timestamp(0,0);
+        this.timestamp = Timestamp.now();
     }
 
     public Double getValue() {
@@ -38,7 +38,7 @@ public class Heartrate implements Comparable<Temperature> {
         this.timestamp = Timestamp.now();
     }
 
-    public int compareTo(Temperature that) {
+    public int compareTo(Heartrate that) {
         //sort based on timestamp
         return this.timestamp.compareTo(that.timestamp);
     }

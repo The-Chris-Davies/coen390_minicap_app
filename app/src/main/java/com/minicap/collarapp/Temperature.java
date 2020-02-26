@@ -14,7 +14,7 @@ public class Temperature implements Comparable<Temperature> {
 
     public Temperature() {
         this.value = 0.0;
-        this.timestamp = new Timestamp(0,0);
+        this.timestamp = Timestamp.now();
     }
 
     public Double getValue() {
