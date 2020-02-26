@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CollarApp</string>
+    <string name="latitude_label">Latitude: </string>
+    <string name="longitude_label">Longitude: </string>
+    <string name="heartrate_label">Heartrate: </string>
+    <string name="timestamp_label">Timestamp: </string>
+    <string name="temperature_label">Temperature: </string>
 </resources>
