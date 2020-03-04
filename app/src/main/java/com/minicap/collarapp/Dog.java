@@ -15,6 +15,7 @@ public class Dog {
     private ArrayList<Position> positions;
     private ArrayList<Heartrate> heartrates;
     private ArrayList<Temperature> temperatures;
+    private ArrayList<Temperature> externalTemperatures;
 
     public ArrayList<Position> getPositions() {
         return positions;
@@ -38,6 +39,14 @@ public class Dog {
 
     public void setTemperatures(ArrayList<Temperature> temperatures) {
         this.temperatures = temperatures;
+    }
+
+    public ArrayList<Temperature> getExternalTemperatures() {
+        return externalTemperatures;
+    }
+
+    public void setExternalTemperatures(ArrayList<Temperature> externalTemperatures) {
+        this.externalTemperatures = externalTemperatures;
     }
 
     public double getBatteryLife() {
