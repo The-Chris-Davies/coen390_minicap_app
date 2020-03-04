@@ -7,6 +7,7 @@ public class Position implements Comparable<Position> {
 
     GeoPoint value;
     Timestamp timestamp;
+    int id;
 
     public Position(GeoPoint value, Timestamp timestamp) {
         this.value = value;
@@ -68,5 +69,13 @@ public class Position implements Comparable<Position> {
     public int compareTo(Position that) {
         //sort based on timestamp
         return this.timestamp.compareTo(that.timestamp);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -8,6 +8,8 @@ public class Dog {
     private String name;
     //battery percent
     private double batteryLife;
+    //the dog's ID
+    private int id;
 
     //arraylists storing past values from the sensors
     private ArrayList<Position> positions;
@@ -50,7 +52,15 @@ public class Dog {
         return name;
     }
 
-    public void setname(String name) {
+    public void setName(String name) {
          this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
