@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 public class Dog {
 
+    //the dog's name
+    private String name;
+    //battery percent
+    private double batteryLife;
+
     //arraylists storing past values from the sensors
     private ArrayList<Position> positions;
     private ArrayList<Heartrate> heartrates;
     private ArrayList<Temperature> temperatures;
-
-    //battery percent
-    private double batteryLife;
 
     public ArrayList<Position> getPositions() {
         return positions;
@@ -42,5 +44,13 @@ public class Dog {
 
     public void setBatteryLife(double batteryLife) {
         this.batteryLife = batteryLife;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setname(String name) {
+         this.name = name;
     }
 }
