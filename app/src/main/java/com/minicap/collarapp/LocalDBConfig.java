@@ -6,7 +6,7 @@ public class LocalDBConfig {
 
     public static final String DOG_TABLE_NAME = "dog";
     public static final String DOG_COLUMN_ID = "dogid";
-    public static final String DOG_COLUMN_TITLE = "dogname";
+    public static final String DOG_COLUMN_NAME = "dogname";
     public static final String DOG_COLUMN_BATTERY = "batterylevel";
 
     public static final String POSITION_TABLE_NAME = "position";

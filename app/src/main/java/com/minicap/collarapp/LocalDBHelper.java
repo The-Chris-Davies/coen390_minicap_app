@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.Timestamp;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -31,7 +33,7 @@ public class LocalDBHelper extends SQLiteOpenHelper {
         //the SQL command to create the dog table
         String CREATE_TABLE_DOG = "CREATE TABLE " + LocalDBConfig.DOG_TABLE_NAME + " (" +
                 LocalDBConfig.DOG_COLUMN_ID + " INTEGER PRIMARY KEY, " +
-                LocalDBConfig.DOG_COLUMN_TITLE + " TEXT NOT NULL, " +
+                LocalDBConfig.DOG_COLUMN_NAME + " TEXT NOT NULL, " +
                 LocalDBConfig.DOG_COLUMN_BATTERY + " INTEGER " +
                 ")";
 
@@ -98,6 +100,178 @@ public class LocalDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int ii) {
         //only called on database layout change
+    }
+
+    public ArrayList<Dog> getDogs() {
+        ArrayList<Dog> dogList = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(LocalDBConfig.DOG_TABLE_NAME, null, null, null, null, null, LocalDBConfig.DOG_COLUMN_ID);
+
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do{
+                        //create dog with just ID
+                        dogList.add(new Dog(cursor.getInt(cursor.getColumnIndex(LocalDBConfig.DOG_COLUMN_ID))));
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch(SQLiteException e) {
+            Log.d(TAG, "EXCEPTION: " + e);
+            Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
+        } finally {
+            if(cursor != null)
+                cursor.close();
+            db.close();
+        }
+
+        return dogList;
+    }
+
+    public void updateDog(Dog dog) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        dog.setPositions(getPositions(dog));
+        dog.setHeartrates(getHeartrates(dog));
+        dog.setTemperatures(getTemperatures(dog));
+        dog.setExternalTemperatures(getExternalTemperatures(dog));
+
+        try {
+            cursor = db.query(LocalDBConfig.DOG_TABLE_NAME, null, LocalDBConfig.DOG_COLUMN_ID + "=" + dog.getId(), null , null, null, LocalDBConfig.DOG_COLUMN_ID);
+
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    dog.setName(cursor.getString(cursor.getColumnIndex(LocalDBConfig.DOG_COLUMN_NAME)));
+                    dog.setBatteryLife(cursor.getDouble(cursor.getColumnIndex(LocalDBConfig.DOG_COLUMN_BATTERY)));
+                }
+            }
+        } catch(SQLiteException e) {
+            Log.d(TAG, "EXCEPTION: " + e + "\nwhen trying to load dog positions");
+            Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
+        } finally {
+            if(cursor != null)
+                cursor.close();
+            db.close();
+        }
+    }
+
+    public ArrayList<Position> getPositions(Dog dog) {
+
+        ArrayList<Position> positionList = new ArrayList();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(LocalDBConfig.POSITION_TABLE_NAME, null, LocalDBConfig.POSITION_COLUMN_DOG + "=" + dog.getId(), null , null, null, LocalDBConfig.POSITION_COLUMN_TIMESTAMP);
+
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do{
+                        positionList.add(new Position(
+                                cursor.getDouble(cursor.getColumnIndex(LocalDBConfig.POSITION_COLUMN_LATITUDE)),
+                                cursor.getDouble(cursor.getColumnIndex(LocalDBConfig.POSITION_COLUMN_LONGITUDE)),
+                                new Timestamp(cursor.getLong(cursor.getColumnIndex(LocalDBConfig.POSITION_COLUMN_TIMESTAMP)),0)));
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch(SQLiteException e) {
+            Log.d(TAG, "EXCEPTION: " + e + "\nwhen trying to load dog positions");
+            Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
+        } finally {
+            if(cursor != null)
+                cursor.close();
+            db.close();
+        }
+        return positionList;
+    }
+
+    public ArrayList<Heartrate> getHeartrates(Dog dog) {
+
+        ArrayList<Heartrate> heartrateList = new ArrayList();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(LocalDBConfig.HEARTRATE_TABLE_NAME, null, LocalDBConfig.HEARTRATE_COLUMN_DOG + "=" + dog.getId(), null , null, null, LocalDBConfig.HEARTRATE_COLUMN_TIMESTAMP);
+
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do{
+                        heartrateList.add(new Heartrate(
+                                cursor.getDouble(cursor.getColumnIndex(LocalDBConfig.HEARTRATE_COLUMN_VALUE)),
+                                new Timestamp(cursor.getLong(cursor.getColumnIndex(LocalDBConfig.HEARTRATE_COLUMN_TIMESTAMP)),0)));
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch(SQLiteException e) {
+            Log.d(TAG, "EXCEPTION: " + e + "\nwhen trying to load dog heart rates");
+            Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
+        } finally {
+            if(cursor != null)
+                cursor.close();
+            db.close();
+        }
+        return heartrateList;
+    }
+
+    public ArrayList<Temperature> getTemperatures(Dog dog) {
+
+        ArrayList<Temperature> temperatureList = new ArrayList();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(LocalDBConfig.TEMPERATURE_TABLE_NAME, null, LocalDBConfig.TEMPERATURE_COLUMN_DOG + "=" + dog.getId(), null , null, null, LocalDBConfig.TEMPERATURE_COLUMN_TIMESTAMP);
+
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do{
+                        temperatureList.add(new Temperature(
+                                cursor.getDouble(cursor.getColumnIndex(LocalDBConfig.TEMPERATURE_COLUMN_VALUE)),
+                                new Timestamp(cursor.getLong(cursor.getColumnIndex(LocalDBConfig.TEMPERATURE_COLUMN_TIMESTAMP)),0)));
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch(SQLiteException e) {
+            Log.d(TAG, "EXCEPTION: " + e + "\nwhen trying to load dog temperatures");
+            Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
+        } finally {
+            if(cursor != null)
+                cursor.close();
+            db.close();
+        }
+        return temperatureList;
+    }
+    public ArrayList<Temperature> getExternalTemperatures(Dog dog) {
+
+        ArrayList<Temperature> temperatureList = new ArrayList();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(LocalDBConfig.TEMPERATURE_TABLE_NAME, null, LocalDBConfig.TEMPERATURE_COLUMN_DOG + "=" + dog.getId(), null , null, null, LocalDBConfig.TEMPERATURE_COLUMN_TIMESTAMP);
+
+            if(cursor != null) {
+                if(cursor.moveToFirst()) {
+                    do{
+                        temperatureList.add(new Temperature(
+                                cursor.getDouble(cursor.getColumnIndex(LocalDBConfig.TEMPERATURE_COLUMN_EXTVAL)),
+                                new Timestamp(cursor.getLong(cursor.getColumnIndex(LocalDBConfig.TEMPERATURE_COLUMN_TIMESTAMP)),0)));
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch(SQLiteException e) {
+            Log.d(TAG, "EXCEPTION: " + e + "\nwhen trying to load dog temperatures");
+            Toast.makeText(context, "Error: " + e, Toast.LENGTH_LONG).show();
+        } finally {
+            if(cursor != null)
+                cursor.close();
+            db.close();
+        }
+        return temperatureList;
     }
 }
 
