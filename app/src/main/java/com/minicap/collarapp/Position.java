@@ -6,6 +6,8 @@ import com.google.firebase.firestore.GeoPoint;
 public class Position implements Comparable<Position> {
 
     GeoPoint value;
+    String longitude;
+    String latitude;
     Timestamp timestamp;
 
     public Position(GeoPoint value, Timestamp timestamp) {
