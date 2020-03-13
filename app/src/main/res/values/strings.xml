@@ -5,4 +5,5 @@
     <string name="heartrate_label">Heartrate: </string>
     <string name="timestamp_label">Timestamp: </string>
     <string name="temperature_label">Temperature: </string>
+    <string name="title_activity_maps">Map</string>
 </resources>

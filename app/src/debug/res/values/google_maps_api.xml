@@ -1,0 +1,24 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=34:76:06:FA:10:0D:03:67:51:48:A4:F2:F9:89:38:16:D3:B7:A8:20%3Bcom.minicap.collarapp
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.minicap.collarapp
+
+    SHA-1 certificate fingerprint:
+    34:76:06:FA:10:0D:03:67:51:48:A4:F2:F9:89:38:16:D3:B7:A8:20
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAIQeinfewg-ZlIOx87SkChz5E9ESY74GA</string>
+</resources>
