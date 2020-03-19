@@ -1,6 +1,7 @@
 package com.minicap.collarapp;
 
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,9 +12,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -22,16 +34,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TemperatureActivity extends AppCompatActivity {
 
-    InputStream inputStream1;
-    InputStream inputStream2;
-    String[] ids;
-    String[] ids1;
-
-
-    LineGraphSeries<DataPoint> series,series1;
+    private LineGraphSeries<DataPoint> extSeries,intSeries;
+    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
+    private CollectionReference mTempRef = mDocRef.collection("temperature");
+    private CollectionReference mExtTempRef = mDocRef.collection("external_temperature");
+    private static final String TAG = "TemperatureActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,102 +50,93 @@ public class TemperatureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature);
 
-        inputStream1 = getResources().openRawResource(R.raw.data1);
+        final GraphView graph = findViewById(R.id.graph);
 
+        graph.getViewport().setMaxY(50);
+        graph.getViewport().setMinY(-50);
+        graph.getViewport().setScalableY(true);
+        graph.getViewport().setScalable(true);
+        graph.setTitle("Interal/External Temperature");
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(TemperatureActivity.this));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
-        inputStream2 = getResources().openRawResource(R.raw.data0);
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream1));
-        BufferedReader reader1 = new BufferedReader(new InputStreamReader(inputStream2));
-        GraphView graph = findViewById(R.id.graph);
-
-
-        series = new LineGraphSeries<DataPoint>();
-        series1 = new LineGraphSeries<DataPoint>();
-        series.setColor(Color.RED);
-        series1.setColor(Color.GREEN);
-
-
-        double x, y;
-        double x1, y1;
-        try {
-            String csvLine;
-            while ((csvLine = reader.readLine()) != null) {
-
-                ids = csvLine.split(",");
-
-
-                try {
-                    Log.d(" Data ", ":" + ids[0] + "  " + ids[1]);
-
-
-                    x = Double.parseDouble(ids[0]);
-                    y = Double.parseDouble(ids[1]);
-
-                    series.appendData(new DataPoint(x, y), true, 25);
-
-
-                    graph.getViewport().setXAxisBoundsManual(true);
-                    graph.getViewport().setMinX(0);
-                    graph.getViewport().setMaxX(50);
-                    graph.getViewport().setMaxY(50);
-                    graph.getViewport().setMinY(-50);
-                    graph.getViewport().setScalableY(true);
-                    graph.getViewport().setScalable(true);
-                    graph.addSeries(series);
-                    // graph.addSeries(series1);
-
-
-                    graph.setTitle("Interal/External Temperature vs Hourly");
-
-
-                } catch (Exception e) {
-                    Log.d("BADDDD", e.toString());
+        //get internal temperature data from firebase
+        mTempRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    //if error has occurred
+                    Log.e(TAG, "Error in internal temperature snapshotListener: ", e);
+                    return;
                 }
-            }
 
-        } catch (IOException ex) {
-            throw new RuntimeException("Error in reading CSV file: " + ex);
-        }
+                ArrayList<Temperature> internalTemps = new ArrayList();
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
+                    internalTemps.add(documentSnapshot.toObject(Temperature.class));
+                Log.d(TAG, "Found " + internalTemps.size() + " internal temperatures in the firebase");
 
-
-        try {
-            String csvLine;
-            while ((csvLine = reader1.readLine()) != null) {
-                ids1 = csvLine.split(",");
-
-                try {
-
-                    Log.d(" Data ", ":" + ids1[0] + "  " + ids1[1]);
-
-
-                    x1 = Double.parseDouble(ids1[0]);
-                    y1 = Double.parseDouble(ids1[1]);
-
-                    // series.appendData(new DataPoint(x,y),true,25);
-                    series1.appendData(new DataPoint(x1, y1), true, 25);
-
-
-                    graph.getViewport().setXAxisBoundsManual(true);
-                    graph.getViewport().setMinX(0);
-                    graph.getViewport().setMaxX(25);
-                    graph.getViewport().setMaxY(50);
-                    graph.getViewport().setScalableY(true);
-                    graph.getViewport().setScalable(true);
-                    graph.addSeries(series1);
-
-
-                    graph.setTitle("Interal/External Temperature vs Hourly");
-
-
-                } catch (Exception e) {
-                    Log.d("BADDDD", e.toString());
+                //if no temperatures available, continue
+                if (internalTemps.isEmpty()) {
+                    Toast.makeText(TemperatureActivity.this, "No body temperature data available", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "No body temperature data available");
+                    return;
                 }
+
+                //sort temperature list
+                Collections.sort(internalTemps);
+
+                //generate list of points
+                intSeries = new LineGraphSeries<DataPoint>();
+                intSeries.setColor(Color.GREEN);
+                for (Temperature internalTemp : internalTemps)
+                    intSeries.appendData(new DataPoint(new Date(internalTemp.getTimestamp().getSeconds()), internalTemp.getValue()), true, 25);
+                //add series to the graph
+                //TODO: replace with a more elegant solution
+                graph.removeSeries(intSeries);
+                graph.addSeries(intSeries);
+
             }
-        } catch (IOException ex) {
-            throw new RuntimeException("Error in reading CSV file: " + ex);
-        }
+        });
+
+        //get external temperature data from firebase
+        mExtTempRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    //if error has occurred
+                    Log.e(TAG, "Error in external temperature snapshotListener: ", e);
+                    return;
+                }
+
+                ArrayList<Temperature> externalTemps = new ArrayList();
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
+                    externalTemps.add(documentSnapshot.toObject(Temperature.class));
+                Log.d(TAG, "Found " + externalTemps.size() + " external temperatures in the firebase");
+
+                //if no temperatures available, continue
+                if (externalTemps.isEmpty()) {
+                    Toast.makeText(TemperatureActivity.this, "No external temperature data available", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "No external temperature data available");
+                    return;
+                }
+
+                //sort temperature list
+                Collections.sort(externalTemps);
+
+                //generate list of points
+                extSeries = new LineGraphSeries<DataPoint>();
+                extSeries.setColor(Color.RED);
+                for (Temperature externalTemp : externalTemps)
+                    extSeries.appendData(new DataPoint(new Date(externalTemp.getTimestamp().getSeconds()), externalTemp.getValue()), true, 25);
+                //add series to the graph
+                //TODO: replace with a more elegant solution
+                graph.removeSeries(extSeries);
+                graph.addSeries(extSeries);
+
+            }
+        });
+
 
 
     }
-    }
+}
