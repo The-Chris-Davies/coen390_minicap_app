@@ -3,6 +3,7 @@ package com.minicap.collarapp;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -71,7 +72,7 @@ public class PositionActivity extends FragmentActivity implements OnMapReadyCall
         //initialize the marker that points to the dog's position
         dogPositionMarker = new MarkerOptions().title("Dog Location");
         //initialize the line that connects all the dog's previous positions
-        final Polyline dogPastMarker = googleMap.addPolyline(new PolylineOptions());
+        final Polyline dogPastMarker = googleMap.addPolyline(new PolylineOptions().color(Color.RED));
         //set minimum / maximum zoom
         mMap.setMinZoomPreference(10.0f);
         //mMap.setMaxZoomPreference(20.0f);
@@ -125,28 +126,5 @@ public class PositionActivity extends FragmentActivity implements OnMapReadyCall
                 }
             }
         });
-
-        /*
-        mDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (documentSnapshot.exists()) {
-                    GeoPoint value = documentSnapshot.getGeoPoint(POSITION_VALUE);
-
-                    //Get longitude and latitude from geopoint
-                    Double latitudeGet = value.getLatitude();
-                    Double longitudeGet = value.getLongitude();
-                    Log.i(TAG, "latitude: " + latitudeGet.toString());
-                    Log.i(TAG, "longitude: " + longitudeGet.toString());
-
-                    //create marker on map
-                    LatLng dogPos = new LatLng(latitudeGet, longitudeGet);
-                    dogPositionMarker.position(dogPos);
-                    mMap.addMarker(dogPositionMarker);
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(dogPos));
-                }
-            }
-        });
-        */
     }
 }
