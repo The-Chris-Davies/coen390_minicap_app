@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         mDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (documentSnapshot.exists()) {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
                     Timestamp time = documentSnapshot.getTimestamp(POSITION_TIMESTAMP);
                     GeoPoint value = documentSnapshot.getGeoPoint(POSITION_VALUE);
                     Date date = time.toDate();
