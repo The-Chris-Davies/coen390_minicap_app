@@ -74,8 +74,8 @@ public class PositionActivity extends FragmentActivity implements OnMapReadyCall
         //initialize the line that connects all the dog's previous positions
         final Polyline dogPastMarker = googleMap.addPolyline(new PolylineOptions().color(Color.RED));
         //set minimum / maximum zoom
-        mMap.setMinZoomPreference(10.0f);
-        //mMap.setMaxZoomPreference(20.0f);
+        //mMap.setMinZoomPreference(10.0f);
+        mMap.setMaxZoomPreference(20.0f);
 
         mPosRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -114,7 +114,7 @@ public class PositionActivity extends FragmentActivity implements OnMapReadyCall
                 LatLng dogPos = new LatLng(latitudeGet, longitudeGet);
                 dogPositionMarker.position(dogPos);
                 mMap.addMarker(dogPositionMarker);
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(dogPos));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(dogPos, 14.0f));
 
                 //draw lines between previous data points
                 if(positions.size() > 1) {
