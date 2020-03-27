@@ -7,10 +7,12 @@ public class Position implements Comparable<Position> {
 
     GeoPoint value;
     Timestamp timestamp;
+    String documentID;
 
     public Position(GeoPoint value, Timestamp timestamp) {
         this.value = value;
         this.timestamp = timestamp;
+        this.documentID = "";
     }
 
     public Position() {
@@ -32,6 +34,14 @@ public class Position implements Comparable<Position> {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setDocumentID(String documentID) {
+        this.documentID = documentID;
+    }
+
+    public String getDocumentID() {
+        return documentID;
     }
 
     public int compareTo(Position that) {

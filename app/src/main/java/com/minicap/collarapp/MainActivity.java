@@ -1,23 +1,27 @@
 package com.minicap.collarapp;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Date;
 
@@ -27,13 +31,28 @@ public class MainActivity extends AppCompatActivity {
     protected TextView heartRateTextView;
     protected TextView locationTextView;
     protected TextView latestUpdateTextView;
-    protected Button positionButton;
 
     public static final String POSITION_TIMESTAMP = "timestamp";
     public static final String POSITION_VALUE = "value";
     private static final String TAG = "MainActivity";
 
-    DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/position/YXT3F0MuJpiUzJStuqNN");
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference mDocRef = db.document("dogs/HpwWiJSGHNbOgJtYi2jM/position/YXT3F0MuJpiUzJStuqNN");
+
+    //First set to dogs (CHANGE TO USER'S DOG THAT IS INPUT)
+    //private DocumentReference dogDocRef = db.document("dogs/HpwWiJSGHNbOgJtYi2jM");
+//    private CollectionReference posRef = dogDocRef.collection("position");
+    private CollectionReference posRef;
+    private CollectionReference tempRef;
+    private CollectionReference heartRef;
+    private CollectionReference extTempRef;
+    //private CollectionReference dogRef = db.collection("dogs");
+
+//    List<String> dogIdList = new ArrayList<>();
+    //List<String> positionIdList = new ArrayList<>();
+    //List<String> posRefsList;
+
+    private Position position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         heartRateTextView = findViewById(R.id.heartRateTextView);
         locationTextView = findViewById(R.id.locationTextView);
         latestUpdateTextView = findViewById(R.id.latestUpdateTextView);
-        positionButton = findViewById(R.id.positionButton);
+        position = new Position();
 
         Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
 
@@ -53,23 +72,53 @@ public class MainActivity extends AppCompatActivity {
         temperatureActivityIntent(temperatureTextView);
         heartRateActivityIntent(heartRateTextView);
         positionActivityIntent(locationTextView);
+
+        //Todo: On Create initialize dog's ID and use it when referencing other collections (temp, heart, pos, etc.)
+        //Todo: see below
+        //Todo: Use USER'S dog document instead of HpwWiJSGHNbOgJtYi2jM
+        posRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/position");
+        extTempRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/external_temperature");
+        heartRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/heartrate");
+        tempRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/temperature");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+            Task<QuerySnapshot> query = posRef
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
+                                                            .get(queryDocumentSnapshots.size() - 1);
+                                position = documentSnapshot.toObject(Position.class);
+                                position.setDocumentID(documentSnapshot.getId());
+                                Timestamp timestamp = position.getTimestamp();
+                                GeoPoint value = position.getValue();
+                                String ID = position.getDocumentID();
+                                Log.i(TAG, "time: " + timestamp.toString() + " " + value.toString() + " " + ID);
+
+                            locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
+                            latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+                        }
+                    });
+
+        //Todo: Make an on event listener for updates on a specific dog
+        String positionDocument = "dogs/HpwWiJSGHNbOgJtYi2jM/position/" + position.getDocumentID();
+        db.document(positionDocument).addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        //mDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        @Override
+        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()) {
                     Timestamp time = documentSnapshot.getTimestamp(POSITION_TIMESTAMP);
                     GeoPoint value = documentSnapshot.getGeoPoint(POSITION_VALUE);
                     Date date = time.toDate();
 
                     String longLat = value.toString();
-//                    String[] longLatList = longLat.split(",");
-//                    String latitude = longLatList[0].substring(longLatList[0].indexOf('=') + 1, longLatList[0].length());
-//                    String longitude = longLatList[1].substring(longLatList[1].indexOf('=') + 1, longLatList[1].lastIndexOf(" "));
                     Log.i(TAG, "Geopoint: " + longLat);
 
                     //Get longitude and latitude from geopoint
@@ -85,23 +134,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-//    public void fetchData() {
-//        mDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//            @Override
-//            public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                if (documentSnapshot.exists()) {
-////                    String timestamp = documentSnapshot.getString(POSITION_TIMESTAMP);
-////                    String value = documentSnapshot.getString(POSITION_VALUE);
-//
-//                    Timestamp time = documentSnapshot.getTimestamp(POSITION_TIMESTAMP);
-//                    GeoPoint value = documentSnapshot.getGeoPoint(POSITION_VALUE);
-//
-//                    locationTextView.setText("Timestamp: " + time + " value: " + value);
-//                }
-//            }
-//        });
-//    }
 
     public void temperatureActivityIntent(TextView temperatureTextView) {
         temperatureTextView.setOnClickListener(new View.OnClickListener() {
