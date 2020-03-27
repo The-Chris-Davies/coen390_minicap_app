@@ -168,7 +168,7 @@ public class TemperatureActivity extends AppCompatActivity {
                 if (isValueX) {
                     // show time for x values
                     Date date = new Date((long)value);
-                    String time = DateFormat.getTimeInstance().format(date) + DateFormat.getDateInstance().format(date);
+                    String time = DateFormat.getTimeInstance().format(date) + " " + DateFormat.getDateInstance().format(date);
                     return time;
                 } else {
                     // show normal y values
