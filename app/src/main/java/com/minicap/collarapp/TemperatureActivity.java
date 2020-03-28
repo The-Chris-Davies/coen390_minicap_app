@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
@@ -47,18 +50,26 @@ public class TemperatureActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature);
 
         final GraphView graph = findViewById(R.id.graph);
 
-        graph.getViewport().setMaxY(50);
-        graph.getViewport().setMinY(-50);
-        graph.getViewport().setScalableY(true);
-        graph.getViewport().setScalable(true);
-        graph.setTitle("Interal/External Temperature");
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(TemperatureActivity.this));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+        intSeries = new LineGraphSeries<DataPoint>();
+        intSeries.setColor(Color.GREEN);
+        intSeries.setDrawDataPoints(true);
+        intSeries.setTitle("Body Temperature");
+        graph.addSeries(intSeries);
+
+        extSeries = new LineGraphSeries<DataPoint>();
+        extSeries.setColor(Color.RED);
+        extSeries.setDrawDataPoints(true);
+        extSeries.setTitle("External Temperature");
+        graph.addSeries(extSeries);
+
+        setupGraph(graph);
 
         //get internal temperature data from firebase
         mTempRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
@@ -86,15 +97,11 @@ public class TemperatureActivity extends AppCompatActivity {
                 Collections.sort(internalTemps);
 
                 //generate list of points
-                intSeries = new LineGraphSeries<DataPoint>();
-                intSeries.setColor(Color.GREEN);
-                for (Temperature internalTemp : internalTemps)
-                    intSeries.appendData(new DataPoint(new Date(internalTemp.getTimestamp().getSeconds()), internalTemp.getValue()), true, 25);
-                //add series to the graph
-                //TODO: replace with a more elegant solution
-                graph.removeSeries(intSeries);
-                graph.addSeries(intSeries);
+                intSeries.resetData(new DataPoint[0]);
 
+                for (Temperature internalTemp : internalTemps)
+                    intSeries.appendData(new DataPoint(internalTemp.getTimestamp().toDate().getTime(), internalTemp.getValue()), true, 24*60);
+                setupGraph(graph, internalTemps.get(internalTemps.size()-1));
             }
         });
 
@@ -124,19 +131,56 @@ public class TemperatureActivity extends AppCompatActivity {
                 Collections.sort(externalTemps);
 
                 //generate list of points
-                extSeries = new LineGraphSeries<DataPoint>();
+                extSeries.resetData(new DataPoint[0]);
                 extSeries.setColor(Color.RED);
+                extSeries.setDrawDataPoints(true);
+                extSeries.setTitle("External Temperature");
                 for (Temperature externalTemp : externalTemps)
-                    extSeries.appendData(new DataPoint(new Date(externalTemp.getTimestamp().getSeconds()), externalTemp.getValue()), true, 25);
-                //add series to the graph
-                //TODO: replace with a more elegant solution
-                graph.removeSeries(extSeries);
-                graph.addSeries(extSeries);
+                    extSeries.appendData(new DataPoint(externalTemp.getTimestamp().toDate().getTime(), externalTemp.getValue()), true, 24*60);
 
+                setupGraph(graph, externalTemps.get(externalTemps.size()-1));
             }
         });
+    }
 
+    private void setupGraph(GraphView graph) {
+        //sets up graph visualization
+        //scale: 1 x axis unit is 1 ms (3600000 is 1 hour);
+        graph.getViewport().setMaxY(50);
+        graph.getViewport().setMinY(-50);
+        graph.getViewport().setScalable(true);
+        graph.getViewport().setMinX(0); //set range to 1 hour
+        graph.getViewport().setMaxX(1800000);
 
+        graph.getViewport().setScrollable(true);
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(TemperatureActivity.this));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(8);
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(45);
 
+        graph.getLegendRenderer().setVisible(true);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+        graph.getLegendRenderer().setFixedPosition(20,20);
+
+        //custom label generation
+        graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if (isValueX) {
+                    // show time for x values
+                    Date date = new Date((long)value);
+                    String time = DateFormat.getTimeInstance().format(date) + " " + DateFormat.getDateInstance().format(date);
+                    return time;
+                } else {
+                    // show normal y values
+                    return super.formatLabel(value, isValueX);
+                }
+            }
+        });
+    }
+
+    private void setupGraph(GraphView graph, Temperature max) {
+        Log.d(TAG, "setupGraph called w/ max temperature");
+        //sets up graph and sets x axis boundaries
+        graph.getViewport().scrollToEnd();
     }
 }
