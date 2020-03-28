@@ -6,10 +6,12 @@ public class Temperature implements Comparable<Temperature> {
 
     Double value;
     Timestamp timestamp;
+    String documentID;
 
     public Temperature(Double value, Timestamp timestamp) {
         this.value = value;
         this.timestamp = timestamp;
+        documentID = "";
     }
 
     public Temperature() {
@@ -31,6 +33,14 @@ public class Temperature implements Comparable<Temperature> {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setDocumentID(String documentID) {
+        this.documentID = documentID;
+    }
+
+    public String getDocumentID() {
+        return documentID;
     }
 
     public int compareTo(Temperature that) {
