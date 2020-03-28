@@ -6,10 +6,12 @@ public class Heartrate implements Comparable<Heartrate> {
 
     Double value;
     Timestamp timestamp;
+    String documentID;
 
     public Heartrate(Double value, Timestamp timestamp) {
         this.value = value;
         this.timestamp = timestamp;
+        this.documentID = "";
     }
 
     public Heartrate() {
@@ -31,6 +33,14 @@ public class Heartrate implements Comparable<Heartrate> {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setDocumentID(String documentID) {
+        this.documentID = documentID;
+    }
+
+    public String getDocumentID() {
+        return documentID;
     }
 
     public int compareTo(Heartrate that) {
