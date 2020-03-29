@@ -1,8 +1,10 @@
 package com.minicap.collarapp;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,7 +37,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class PositionActivity extends FragmentActivity implements OnMapReadyCallback {
+public class PositionActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
@@ -50,12 +52,32 @@ public class PositionActivity extends FragmentActivity implements OnMapReadyCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
 
+        //Display navigation back button
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+    //Back button navigation return function to MainActivity
+    @Override
+    public boolean onSupportNavigateUp(){
+        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(returnMain);
+        finish();
+        return true;
+    }
+
+    //On phone back button pressed return to MainActivity
+    @Override
+    public void onBackPressed() {
+        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(returnMain);
+        finish();
+    }
 
     /**
      * Manipulates the map once available.
@@ -127,4 +149,6 @@ public class PositionActivity extends FragmentActivity implements OnMapReadyCall
             }
         });
     }
+
+
 }

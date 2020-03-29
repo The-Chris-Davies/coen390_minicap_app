@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         temperature = new Temperature();
 
         //Connect to database and give toast
-        Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
+        //Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
 
         //Clickable text view to switch to activities
         temperatureActivityIntent(temperatureTextView);
@@ -104,6 +104,14 @@ public class MainActivity extends AppCompatActivity {
             queryLatestPositionDocument();
             updateChangedPositionDocument();
             //queryLatestHeartrateDocument();
+    }
+
+    //On phone back button pressed return to MainActivity
+    @Override
+    public void onBackPressed() {
+        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(returnMain);
+        finish();
     }
 
     @Override

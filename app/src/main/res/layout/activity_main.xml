@@ -6,45 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <TextView
         android:id="@+id/heartRateTextView"
-        android:layout_width="152dp"
-        android:layout_height="33dp"
-        android:text="Heart Rate"
+        android:layout_width="294dp"
+        android:layout_height="56dp"
+        android:text="Processing Heartrate..."
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintHorizontal_bias="0.376"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.399"
-        />
-
+        app:layout_constraintVertical_bias="0.499" />
 
     <TextView
         android:id="@+id/locationTextView"
         android:layout_width="284dp"
         android:layout_height="64dp"
-        android:text="Location: "
+        android:text="Processing location..."
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.354"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.649" />
+        app:layout_constraintVertical_bias="0.821" />
 
     <TextView
         android:id="@+id/temperatureTextView"
-        android:layout_width="152dp"
-        android:layout_height="33dp"
-        android:text="Temperature: "
+        android:layout_width="303dp"
+        android:layout_height="47dp"
         android:clickable="true"
+        android:text="Processing Temperature..."
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintHorizontal_bias="0.416"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.186"
-        />
+        app:layout_constraintVertical_bias="0.241" />
 
     <TextView
         android:id="@+id/latestUpdateTextView"

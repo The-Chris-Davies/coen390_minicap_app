@@ -3,6 +3,8 @@ package com.minicap.collarapp;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,11 +51,12 @@ public class HeartrateActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_heartrate);
+
+        //Display navigation back button
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
 
         final GraphView graph = findViewById(R.id.graph);
 
@@ -103,6 +106,23 @@ public class HeartrateActivity extends AppCompatActivity {
                     series.appendData(new DataPoint(heartrate.getTimestamp().toDate().getTime(), heartrate.getValue()), true, 24*60);
             }
         });
+    }
+
+    //Back button navigation return function to MainActivity
+    @Override
+    public boolean onSupportNavigateUp(){
+        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(returnMain);
+        finish();
+        return true;
+    }
+
+    //On phone back button pressed return to MainActivity
+    @Override
+    public void onBackPressed() {
+        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(returnMain);
+        finish();
     }
 
     private void setupGraph(GraphView graph) {
