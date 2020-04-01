@@ -62,15 +62,18 @@ public class TemperatureActivity extends AppCompatActivity {
         final GraphView graph = findViewById(R.id.graph);
 
         intSeries = new LineGraphSeries<DataPoint>();
-        intSeries.setColor(Color.GREEN);
+        intSeries.setColor(Color.BLUE);
         intSeries.setDrawDataPoints(true);
-        intSeries.setTitle("Body Temperature");
+        intSeries.setDataPointsRadius(10);
+        intSeries.setThickness(15);
+        intSeries.setTitle("Body Temperature °C");
+        //intSeries.setDrawBackground(true);
         graph.addSeries(intSeries);
 
         extSeries = new LineGraphSeries<DataPoint>();
-        extSeries.setColor(Color.RED);
+        extSeries.setColor(Color.MAGENTA);
         extSeries.setDrawDataPoints(true);
-        extSeries.setTitle("External Temperature");
+        extSeries.setTitle("External Temperature °C");
         graph.addSeries(extSeries);
 
         setupGraph(graph);
@@ -148,9 +151,12 @@ public class TemperatureActivity extends AppCompatActivity {
 
                 //generate list of points
                 extSeries.resetData(new DataPoint[0]);
-                extSeries.setColor(Color.RED);
+                extSeries.setColor(Color.MAGENTA);
                 extSeries.setDrawDataPoints(true);
-                extSeries.setTitle("External Temperature");
+                extSeries.setDataPointsRadius(15);
+                extSeries.setThickness(12);
+                extSeries.setTitle("External Temperature °C");
+                //extSeries.setDrawBackground(true);
                 for (Temperature externalTemp : externalTemps)
                     extSeries.appendData(new DataPoint(externalTemp.getTimestamp().toDate().getTime(), externalTemp.getValue()), true, 24*60);
 
@@ -179,20 +185,35 @@ public class TemperatureActivity extends AppCompatActivity {
     private void setupGraph(GraphView graph) {
         //sets up graph visualization
         //scale: 1 x axis unit is 1 ms (3600000 is 1 hour);
-        graph.getViewport().setMaxY(50);
-        graph.getViewport().setMinY(-50);
+        graph.getViewport().setMinY(-60);
+        graph.getViewport().setMaxY(60);
+
         graph.getViewport().setScalable(true);
         graph.getViewport().setMinX(0); //set range to 1 hour
         graph.getViewport().setMaxX(1800000);
 
+        graph.getGridLabelRenderer().setVerticalAxisTitle("Temperature °C");
+        graph.getGridLabelRenderer().setHorizontalAxisTitle("Time");
+
+        graph.getGridLabelRenderer().setHorizontalAxisTitleTextSize(48);
+        graph.getGridLabelRenderer().setHorizontalAxisTitleColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalAxisTitleColor(Color.BLACK);
+        graph.getGridLabelRenderer().setVerticalAxisTitleTextSize(48);
+
+        graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
+        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLUE);
+
+
         graph.getViewport().setScrollable(true);
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(TemperatureActivity.this));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(8);
+        graph.getGridLabelRenderer().setNumHorizontalLabels(18);
         graph.getGridLabelRenderer().setHorizontalLabelsAngle(45);
 
+
+
         graph.getLegendRenderer().setVisible(true);
-        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
-        graph.getLegendRenderer().setFixedPosition(20,20);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.BOTTOM);
+        //graph.getLegendRenderer().setFixedPosition(20,20);
 
         //custom label generation
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
