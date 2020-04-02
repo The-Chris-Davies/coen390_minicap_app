@@ -157,6 +157,12 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.size() < 1) {
+                            //if no data is returned, raise a toast and continue
+                            Toast.makeText(MainActivity.this, "No location data currently available", Toast.LENGTH_LONG).show();
+                            Log.i(TAG, "No location data available for tracking feature");
+                        }
+
                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);
                         position = documentSnapshot.toObject(Position.class);
