@@ -3,6 +3,8 @@ package com.minicap.collarapp;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -43,9 +46,14 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
     private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
     private CollectionReference mPosRef = mDocRef.collection("position");
 
+    private RecyclerView positionList;
+    private RecyclerView.Adapter positionAdapter;
+    private RecyclerView.LayoutManager positionLayoutManager;
+
     private static final String POSITION_VALUE = "value";
     private static final String TAG = "PositionActivity";
     private MarkerOptions dogPositionMarker;
+    private ArrayList<Position> positions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +64,19 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        //get recyclerview
+        positionList = findViewById(R.id.positionList);
+        positionLayoutManager = new LinearLayoutManager(this);
+
+
+        // Obtain the mapView and get notified when the map is ready to be used.
+        MapView mapView = (MapView) findViewById(R.id.map);
+        if (mapView != null)
+        {
+            mapView.onCreate(null);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
     }
 
     //Back button navigation return function to MainActivity
@@ -109,7 +126,7 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
                 }
 
                 //add the positions to the array
-                ArrayList<Position> positions= new ArrayList();
+                positions= new ArrayList();
                 for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     positions.add(documentSnapshot.toObject(Position.class));
                 Log.d(TAG, "Found " + positions.size() + " positions in the firebase");
@@ -123,12 +140,17 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
 
                 //sort the array (based on timestamp)
                 //TODO: get data from firebase pre-sorted!
-                Collections.sort(positions);
+                Collections.sort(positions, Collections.reverseOrder());
+
+                //add the positions to the arrayList
+                positionAdapter = new PositionListAdapter(PositionActivity.this, positions, mMap);
+                positionList.setAdapter(positionAdapter);
+                positionList.setLayoutManager(positionLayoutManager);
 
                 //plot the position on the map
                 //Get longitude and latitude from GeoPoint
-                Double latitudeGet = positions.get(positions.size()-1).getValue().getLatitude();
-                Double longitudeGet = positions.get(positions.size()-1).getValue().getLongitude();
+                Double latitudeGet = positions.get(0).getValue().getLatitude();
+                Double longitudeGet = positions.get(0).getValue().getLongitude();
                 Log.i(TAG, "latitude: " + latitudeGet.toString());
                 Log.i(TAG, "longitude: " + longitudeGet.toString());
 
