@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                             //if no data is returned, raise a toast and continue
                             Toast.makeText(MainActivity.this, "No location data currently available", Toast.LENGTH_LONG).show();
                             Log.i(TAG, "No location data available for tracking feature");
+                            return;
                         }
 
                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
