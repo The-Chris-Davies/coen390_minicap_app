@@ -8,9 +8,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -22,15 +25,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     protected TextView temperatureTextView;
     protected TextView heartRateTextView;
     protected TextView locationTextView;
+    protected TextView temperatureExternalTextView;
     protected TextView latestUpdateTextView;
 
     public static final String POSITION_TIMESTAMP = "timestamp";
@@ -49,13 +56,15 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference extTempRef;
     //private CollectionReference dogRef = db.collection("dogs");
 
-    //List<String> dogIdList = new ArrayList<>();
-    //List<String> positionIdList = new ArrayList<>();
-    //List<String> posRefsList;
+    ArrayList<String> dogs;
+
+    String dog1Id;
+    String dog2Id;
 
     private Position position;
     private Heartrate heartrate;
     private Temperature temperature;
+    private TemperatureExternal temperatureExternal;
     Handler mHandler;
 
     @Override
@@ -68,11 +77,16 @@ public class MainActivity extends AppCompatActivity {
         heartRateTextView = findViewById(R.id.heartRateTextView);
         locationTextView = findViewById(R.id.locationTextView);
         latestUpdateTextView = findViewById(R.id.latestUpdateTextView);
+        temperatureExternalTextView = findViewById(R.id.temperatureExternalTextView);
 
         //Initialize position, heartrate and temperature objects
         position = new Position();
         heartrate = new Heartrate();
         temperature = new Temperature();
+        temperatureExternal = new TemperatureExternal();
+        dogs = new ArrayList<>();
+        dog1Id = new String();
+        dog2Id = new String();
 
         //Connect to database and give toast
         //Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
@@ -88,6 +102,27 @@ public class MainActivity extends AppCompatActivity {
         //Todo: On Create initialize dog's ID and use it when referencing other collections (temp, heart, pos, etc.)
         //Todo: see below
         //Todo: Use USER'S dog document instead of HpwWiJSGHNbOgJtYi2jM
+
+        db.collection("dogs").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    //if error has occurred
+                    Log.e(TAG, "Error in dogs snapshotListener: ", e);
+                    return;
+                }
+
+//                dog1Id = queryDocumentSnapshots.get(0);
+//                dog2Id = queryDocumentSnapshots.get(1);
+
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    dogs.add(documentSnapshot.getId());
+                    Log.i(TAG, documentSnapshot.getId());
+                }
+
+            }
+        });
+
         posRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/position");
         extTempRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/external_temperature");
         heartRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/heartrate");
@@ -101,9 +136,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-            queryLatestPositionDocument();
-            updateChangedPositionDocument();
-            //queryLatestHeartrateDocument();
+        //Position
+        queryLatestPositionDocument();  //Find latest document
+        //updateChangedPositionDocument();    //Update text with document data that was changed
+
+        //Heartrate
+        queryLatestHeartrateDocument();
+
+        //Temperature
+        queryLatestDogTemperatureDocument();
+
+        //External temperature
+        queryLatestExternalTemperatureDocument();
     }
 
     //On phone back button pressed return to MainActivity
@@ -149,8 +193,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Dog position
     public void queryLatestPositionDocument() {
-        Task<QuerySnapshot> query = posRef
+        Task<QuerySnapshot> posQuery = posRef
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(1)
                 .get()
@@ -208,18 +253,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void reload() {
-        Intent intent = getIntent();
-        overridePendingTransition(0, 0);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        finish();
-
-        overridePendingTransition(0, 0);
-        startActivity(intent);
-    }
-
+    //Dog heartrate
     public void queryLatestHeartrateDocument() {
-        Task<QuerySnapshot> query = heartRef
+        Task<QuerySnapshot> heartQuery = heartRef
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(1)
                 .get()
@@ -228,14 +264,98 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);
-                        heartrate = documentSnapshot.toObject(Heartrate.class);
-                        heartrate.setDocumentID(documentSnapshot.getId());
-                        Timestamp timestamp = heartrate.getTimestamp();
-                        Double value = heartrate.getValue();
-                        String ID = heartrate.getDocumentID();
-                        Log.i(TAG, "time: " + timestamp.toString() + " " + value.toString() + " " + ID);
 
-                        heartRateTextView.setText("Heartrate: " + value);
+                        //Get timestamp, Id and value
+                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+                        String Id = documentSnapshot.getId();
+                        heartrate.setTimestamp(timestamp);
+                        heartrate.setDocumentID(Id);
+                        //Check if value is string or number and then set to object
+                        if(documentSnapshot.getData().get("value") instanceof String) {
+                            Double value = Double.valueOf(documentSnapshot.getString("value"));
+                            heartrate.setValue(value);
+                        }
+                        else {
+                            Double value = documentSnapshot.getDouble("value");
+                            heartrate.setValue(value);
+                        }
+
+                        Double value = heartrate.getValue();
+                        Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
+
+                        heartRateTextView.setText("Heartrate: " + value + "BPM");
+                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+                    }
+                });
+    }
+
+    //Dog temperature
+    public void queryLatestDogTemperatureDocument() {
+        Task<QuerySnapshot> dogTempQuery = tempRef
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+
+                        //Get timestamp, Id and value
+                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+                        String Id = documentSnapshot.getId();
+                        temperature.setTimestamp(timestamp);
+                        temperature.setDocumentID(Id);
+                        //Check if value is string or number and then set to object
+                        if(documentSnapshot.getData().get("value") instanceof String) {
+                            Double value = Double.valueOf(documentSnapshot.getString("value"));
+                            temperature.setValue(value);
+                        }
+                        else {
+                            Double value = documentSnapshot.getDouble("value");
+                            temperature.setValue(value);
+                        }
+
+                        Double value = temperature.getValue();
+                        Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
+
+                        temperatureTextView.setText("Body Temperature: " + value + "°C");
+                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+                    }
+                });
+    }
+
+    //External temperature
+    public void queryLatestExternalTemperatureDocument() {
+        Task<QuerySnapshot> dogTempQuery = extTempRef
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+
+                        //Get timestamp, Id and value
+                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+                        String Id = documentSnapshot.getId();
+                        temperatureExternal.setTimestamp(timestamp);
+                        temperatureExternal.setDocumentID(Id);
+                        //Check if value is string or number and then set to object
+                        if(documentSnapshot.getData().get("value") instanceof String) {
+                            Double value = Double.valueOf(documentSnapshot.getString("value"));
+                            temperatureExternal.setValue(value);
+                        }
+                        else {
+                            Double value = documentSnapshot.getDouble("value");
+                            temperatureExternal.setValue(value);
+                        }
+
+                        Double value = temperatureExternal.getValue();
+                        Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
+
+                        temperatureExternalTextView.setText("Environmental Temperature: " + value + "°C");
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
                     }
                 });
@@ -246,10 +366,19 @@ public class MainActivity extends AppCompatActivity {
         public void run()
         {
             Toast.makeText(MainActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
-            queryLatestPositionDocument();
-            updateChangedPositionDocument();
+            //Position
+            queryLatestPositionDocument();  //Find latest document
+            updateChangedPositionDocument();    //Update text with document data that was changed
 
-            //queryLatestHeartrateDocument();
+            //Heartrate
+            queryLatestHeartrateDocument();
+
+            //Temperature
+            queryLatestDogTemperatureDocument();
+
+            //External temperature
+            queryLatestExternalTemperatureDocument();
+
             MainActivity.this.mHandler.postDelayed(m_Runnable, 5000); //Reload mainactivity after 5s
         }
     };
