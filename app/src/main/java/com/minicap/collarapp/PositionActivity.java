@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -37,8 +39,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.reflect.Array;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
 
 public class PositionActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -52,7 +57,6 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
 
     private static final String POSITION_VALUE = "value";
     private static final String TAG = "PositionActivity";
-    private MarkerOptions dogPositionMarker;
     private ArrayList<Position> positions;
 
     @Override
@@ -108,66 +112,87 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //initialize the marker that points to the dog's position
-        dogPositionMarker = new MarkerOptions().title("Dog Location");
-        //initialize the line that connects all the dog's previous positions
-        final Polyline dogPastMarker = googleMap.addPolyline(new PolylineOptions().color(Color.RED));
         //set minimum / maximum zoom
         //mMap.setMinZoomPreference(10.0f);
         mMap.setMaxZoomPreference(20.0f);
 
+        //add on marker click callback
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(final Marker marker) {
+                positionList.scrollToPosition(positions.indexOf(marker.getTag()));
+                //run button's callback after recyclerView has drawn it (to prevent null reference)
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG,"clicked on index " + positions.indexOf(marker.getTag()));
+                        positionList.findViewHolderForAdapterPosition(positions.indexOf(marker.getTag())).itemView.performClick();
+                    }
+                },10);
+                return false;
+            }
+        });
+
         mPosRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if(e != null) {
-                    //if error has occurred
-                    Log.e(TAG, "Error in snapshotListener: ", e);
-                    return;
-                }
+            if(e != null) {
+                //if error has occurred
+                Log.e(TAG, "Error in snapshotListener: ", e);
+                return;
+            }
 
-                //add the positions to the array
-                positions= new ArrayList();
-                for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
-                    positions.add(documentSnapshot.toObject(Position.class));
-                Log.d(TAG, "Found " + positions.size() + " positions in the firebase");
+            //add the positions to the array
+            positions= new ArrayList();
+            for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
+                positions.add(documentSnapshot.toObject(Position.class));
+            Log.d(TAG, "Found " + positions.size() + " positions in the firebase");
 
-                //if no positions available, continue
-                if(positions.isEmpty()){
-                    Toast.makeText(PositionActivity.this, "No location data available for tracking feature", Toast.LENGTH_LONG).show();
-                    Log.i(TAG, "No location data available for tracking feature");
-                    return;
-                }
+            //if no positions available, continue
+            if(positions.isEmpty()){
+                Toast.makeText(PositionActivity.this, "No location data available for tracking feature", Toast.LENGTH_LONG).show();
+                Log.i(TAG, "No location data available for tracking feature");
+                return;
+            }
 
-                //sort the array (based on timestamp)
-                //TODO: get data from firebase pre-sorted!
-                Collections.sort(positions, Collections.reverseOrder());
+            //sort the array (based on timestamp)
+            //TODO: get data from firebase pre-sorted!
+            Collections.sort(positions, Collections.reverseOrder());
 
-                //add the positions to the arrayList
-                positionAdapter = new PositionListAdapter(PositionActivity.this, positions, mMap);
-                positionList.setAdapter(positionAdapter);
-                positionList.setLayoutManager(positionLayoutManager);
+            //add the positions to the arrayList
+            positionAdapter = new PositionListAdapter(PositionActivity.this, positions, mMap);
+            positionList.setAdapter(positionAdapter);
+            positionList.setLayoutManager(positionLayoutManager);
+            positionList.getAdapter().notifyDataSetChanged();   //probably not necessary
 
-                //plot the position on the map
-                //Get longitude and latitude from GeoPoint
-                Double latitudeGet = positions.get(0).getValue().getLatitude();
-                Double longitudeGet = positions.get(0).getValue().getLongitude();
-                Log.i(TAG, "latitude: " + latitudeGet.toString());
-                Log.i(TAG, "longitude: " + longitudeGet.toString());
+            //clear the map's markers and lines
+            mMap.clear();
 
-                //create marker on map
+            //create markers on map
+            for(Position pos : positions) {
+                Double latitudeGet = pos.getValue().getLatitude();
+                Double longitudeGet = pos.getValue().getLongitude();
                 LatLng dogPos = new LatLng(latitudeGet, longitudeGet);
-                dogPositionMarker.position(dogPos);
-                mMap.addMarker(dogPositionMarker);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(dogPos, 14.0f));
+                //todo: set the marker image differently for most recent and other points.
+                mMap.addMarker(new MarkerOptions().title(DateFormat.getTimeInstance().format(pos.getTimestamp().toDate())).position(dogPos)).setTag(pos);
+                //zoom to most recent position
+                if(pos == positions.get(0))
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(dogPos, 14.0f));
+            }
 
-                //draw lines between previous data points
-                if(positions.size() > 1) {
-                    ArrayList<LatLng> linePts = new ArrayList(positions.size());
-                    for(Position position: positions) {
-                        linePts.add(new LatLng(position.getValue().getLatitude(), position.getValue().getLongitude()));
+            //draw lines between previous data points
+            if(positions.size() > 1) {
+                ArrayList<LatLng> linePts = new ArrayList();
+                for(int i = 0; i < positions.size(); i++) {
+                    //if timestamp difference is over 15 minutes, disconnect the line
+                    if(i >= 1 && (positions.get(i).getTimestamp().getSeconds() + 60*15 < positions.get(i-1).getTimestamp().getSeconds())) {
+                        mMap.addPolyline(new PolylineOptions().color(Color.RED).jointType(1)).setPoints(linePts);
+                        linePts = new ArrayList();
                     }
-                    dogPastMarker.setPoints(linePts);
+                    linePts.add(new LatLng(positions.get(i).getValue().getLatitude(), positions.get(i).getValue().getLongitude()));
                 }
+                mMap.addPolyline(new PolylineOptions().color(Color.RED)).setPoints(linePts);
+            }
             }
         });
     }
