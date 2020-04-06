@@ -132,8 +132,9 @@ public class HeartrateActivity extends AppCompatActivity {
     private void setupGraph(GraphView graph) {
         //sets up graph visualization
         //scale: 1 x axis unit is 1 ms (3600000 is 1 hour);
-        graph.getViewport().setMaxY(50);
         graph.getViewport().setMinY(-50);
+        graph.getViewport().setMaxY(50);
+
         graph.getViewport().setScalable(true);
         graph.getViewport().setMinX(0); //set range to 1 hour
         graph.getViewport().setMaxX(1800000);
