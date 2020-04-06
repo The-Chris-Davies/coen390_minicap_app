@@ -91,10 +91,14 @@ public class TemperatureActivity extends AppCompatActivity {
                 ArrayList<Temperature> internalTemps = new ArrayList();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     //check if value is a string
-                    if(documentSnapshot.getData().get("value") instanceof String)
+                    if(documentSnapshot.getData().get("value") instanceof String) {
+                        if(((String) documentSnapshot.getData().get("value")).isEmpty())
+                            continue;
+
                         internalTemps.add(new Temperature(
-                                Double.parseDouble( (String) documentSnapshot.getData().get("value")),
+                                Double.parseDouble((String) documentSnapshot.getData().get("value")),
                                 (Timestamp) documentSnapshot.getData().get("timestamp")));
+                    }
                     else
                         internalTemps.add(documentSnapshot.toObject(Temperature.class));
                 Log.d(TAG, "Found " + internalTemps.size() + " internal temperatures in the firebase");
@@ -131,10 +135,14 @@ public class TemperatureActivity extends AppCompatActivity {
                 ArrayList<Temperature> externalTemps = new ArrayList();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     //check if value is a string
-                    if(documentSnapshot.getData().get("value") instanceof String)
+                    if(documentSnapshot.getData().get("value") instanceof String) {
+                        if (((String) documentSnapshot.getData().get("value")).isEmpty())
+                            continue;
+
                         externalTemps.add(new Temperature(
-                                Double.parseDouble( (String) documentSnapshot.getData().get("value")),
+                                Double.parseDouble((String) documentSnapshot.getData().get("value")),
                                 (Timestamp) documentSnapshot.getData().get("timestamp")));
+                    }
                     else
                         externalTemps.add(documentSnapshot.toObject(Temperature.class));
                 Log.d(TAG, "Found " + externalTemps.size() + " external temperatures in the firebase");

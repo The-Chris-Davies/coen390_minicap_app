@@ -81,10 +81,14 @@ public class HeartrateActivity extends AppCompatActivity {
                 ArrayList<Heartrate> heartrates = new ArrayList();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     //check if value is a string
-                    if(documentSnapshot.getData().get("value") instanceof String)
+                    if(documentSnapshot.getData().get("value") instanceof String) {
+                        if (((String) documentSnapshot.getData().get("value")).isEmpty())
+                            continue;
+
                         heartrates.add(new Heartrate(
-                                Double.parseDouble( (String) documentSnapshot.getData().get("value")),
+                                Double.parseDouble((String) documentSnapshot.getData().get("value")),
                                 (Timestamp) documentSnapshot.getData().get("timestamp")));
+                    }
                     else
                         heartrates.add(documentSnapshot.toObject(Heartrate.class));
                 Log.d(TAG, "Found " + heartrates.size() + " heartrates in the firebase");
