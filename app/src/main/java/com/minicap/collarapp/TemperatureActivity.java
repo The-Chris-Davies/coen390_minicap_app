@@ -55,6 +55,8 @@ public class TemperatureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature);
 
+
+
         //Display navigation back button
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
@@ -71,7 +73,7 @@ public class TemperatureActivity extends AppCompatActivity {
         graph.addSeries(intSeries);
 
         extSeries = new LineGraphSeries<DataPoint>();
-        extSeries.setColor(Color.MAGENTA);
+        extSeries.setColor(Color.rgb(255,128,0));
         extSeries.setDrawDataPoints(true);
         extSeries.setTitle("External Temperature °C");
         graph.addSeries(extSeries);
@@ -157,9 +159,10 @@ public class TemperatureActivity extends AppCompatActivity {
                 //sort temperature list
                 Collections.sort(externalTemps);
 
+
                 //generate list of points
                 extSeries.resetData(new DataPoint[0]);
-                extSeries.setColor(Color.MAGENTA);
+                extSeries.setColor(Color.rgb(255,128,0));
                 extSeries.setDrawDataPoints(true);
                 extSeries.setDataPointsRadius(15);
                 extSeries.setThickness(12);
@@ -191,11 +194,10 @@ public class TemperatureActivity extends AppCompatActivity {
     }
 
     private void setupGraph(GraphView graph) {
-        //sets up graph visualization
+        //sets up graph visualizatio
         //scale: 1 x axis unit is 1 ms (3600000 is 1 hour);
-        graph.getViewport().setMinY(-60);
-        graph.getViewport().setMaxY(60);
-
+        graph.getViewport().setMinY(-50);
+        graph.getViewport().setMaxY(50);
         graph.getViewport().setScalable(true);
         graph.getViewport().setMinX(0); //set range to 1 hour
         graph.getViewport().setMaxX(1800000);
