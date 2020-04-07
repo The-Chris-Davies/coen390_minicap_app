@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,9 +35,14 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.TextView;
@@ -50,12 +56,27 @@ public class TemperatureActivity extends AppCompatActivity {
     private CollectionReference mExtTempRef = mDocRef.collection("external_temperature");
     private static final String TAG = "TemperatureActivity";
 
+    private RecyclerView temperatureList;
+    private RecyclerView.Adapter temperatureAdapter;
+    private RecyclerView.LayoutManager temperatureLayoutManager;
+
+    private RecyclerView extTempList;
+    private RecyclerView.Adapter extTempAdapter;
+    private RecyclerView.LayoutManager extTempLayoutManager;
+
+    ArrayList<Temperature> internalTemps;
+    ArrayList<Temperature> externalTemps;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature);
 
-
+        //init recyclerviews
+        temperatureList = findViewById(R.id.temperatureList);
+        temperatureLayoutManager = new LinearLayoutManager(this);
+        extTempList = findViewById(R.id.extTemperatureList);
+        extTempLayoutManager = new LinearLayoutManager(this);
 
         //Display navigation back button
         assert getSupportActionBar() != null;
@@ -69,13 +90,50 @@ public class TemperatureActivity extends AppCompatActivity {
         intSeries.setDataPointsRadius(10);
         intSeries.setThickness(15);
         intSeries.setTitle("Body Temperature °C");
-        //intSeries.setDrawBackground(true);
+        intSeries.setOnDataPointTapListener(new OnDataPointTapListener() {
+            @Override
+            public void onTap(Series series, DataPointInterface dataPoint) {
+                for(int i = internalTemps.size()-1; i >= 0; i--) {
+                    if(internalTemps.get(i).getTimestamp().toDate().getTime() == dataPoint.getX()) {
+                        temperatureList.scrollToPosition(i);
+                        //run button's callback after recyclerView has drawn it (to prevent null reference)
+                        final int finalI = i;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG,"clicked on index " + finalI);
+                                temperatureList.findViewHolderForAdapterPosition(finalI).itemView.performClick();
+                            }
+                        },10);
+                    }
+                }
+            }
+        });
         graph.addSeries(intSeries);
 
         extSeries = new LineGraphSeries<DataPoint>();
         extSeries.setColor(Color.rgb(255,128,0));
         extSeries.setDrawDataPoints(true);
         extSeries.setTitle("External Temperature °C");
+        extSeries.setOnDataPointTapListener(new OnDataPointTapListener() {
+            @Override
+            public void onTap(Series series, DataPointInterface dataPoint) {
+                for(int i = externalTemps.size()-1; i >= 0; i--) {
+                    if(externalTemps.get(i).getTimestamp().toDate().getTime() == dataPoint.getX()) {
+                        extTempList.scrollToPosition(i);
+                        //run button's callback after recyclerView has drawn it (to prevent null reference)
+                        final int finalI = i;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG,"clicked on index " + finalI);
+                                extTempList.findViewHolderForAdapterPosition(finalI).itemView.performClick();
+                            }
+                        },10);
+                    }
+                }
+            }
+        });
         graph.addSeries(extSeries);
 
         setupGraph(graph);
@@ -90,7 +148,7 @@ public class TemperatureActivity extends AppCompatActivity {
                     return;
                 }
 
-                ArrayList<Temperature> internalTemps = new ArrayList();
+                internalTemps = new ArrayList();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     //check if value is a string
                     if(documentSnapshot.getData().get("value") instanceof String) {
@@ -113,13 +171,19 @@ public class TemperatureActivity extends AppCompatActivity {
                 }
 
                 //sort temperature list
-                Collections.sort(internalTemps);
+                Collections.sort(internalTemps, Collections.reverseOrder());
+
+                //add the internal temps to the arrayList
+                temperatureAdapter = new TemperatureListAdapter(TemperatureActivity.this, internalTemps, graph);
+                temperatureList.setAdapter(temperatureAdapter);
+                temperatureList.setLayoutManager(temperatureLayoutManager);
+                temperatureList.getAdapter().notifyDataSetChanged();   //probably not necessary
 
                 //generate list of points
                 intSeries.resetData(new DataPoint[0]);
 
-                for (Temperature internalTemp : internalTemps)
-                    intSeries.appendData(new DataPoint(internalTemp.getTimestamp().toDate().getTime(), internalTemp.getValue()), true, 24*60);
+                for (int i = internalTemps.size()-1; i >= 0; i--)
+                    intSeries.appendData(new DataPoint(internalTemps.get(i).getTimestamp().toDate().getTime(), internalTemps.get(i).getValue()), true, 24*60);
                 setupGraph(graph, internalTemps.get(internalTemps.size()-1));
             }
         });
@@ -134,7 +198,7 @@ public class TemperatureActivity extends AppCompatActivity {
                     return;
                 }
 
-                ArrayList<Temperature> externalTemps = new ArrayList();
+                externalTemps = new ArrayList();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     //check if value is a string
                     if(documentSnapshot.getData().get("value") instanceof String) {
@@ -157,8 +221,13 @@ public class TemperatureActivity extends AppCompatActivity {
                 }
 
                 //sort temperature list
-                Collections.sort(externalTemps);
+                Collections.sort(externalTemps, Collections.reverseOrder());
 
+                //add the external temps to the arrayList
+                extTempAdapter = new TemperatureListAdapter(TemperatureActivity.this, externalTemps, graph);
+                extTempList.setAdapter(extTempAdapter);
+                extTempList.setLayoutManager(extTempLayoutManager);
+                extTempList.getAdapter().notifyDataSetChanged();   //probably not necessary
 
                 //generate list of points
                 extSeries.resetData(new DataPoint[0]);
@@ -168,8 +237,8 @@ public class TemperatureActivity extends AppCompatActivity {
                 extSeries.setThickness(12);
                 extSeries.setTitle("External Temperature °C");
                 //extSeries.setDrawBackground(true);
-                for (Temperature externalTemp : externalTemps)
-                    extSeries.appendData(new DataPoint(externalTemp.getTimestamp().toDate().getTime(), externalTemp.getValue()), true, 24*60);
+                for (int i = externalTemps.size()-1; i >= 0; i--)
+                    extSeries.appendData(new DataPoint(externalTemps.get(i).getTimestamp().toDate().getTime(), externalTemps.get(i).getValue()), true, 24*60);
 
                 setupGraph(graph, externalTemps.get(externalTemps.size()-1));
             }
@@ -194,7 +263,7 @@ public class TemperatureActivity extends AppCompatActivity {
     }
 
     private void setupGraph(GraphView graph) {
-        //sets up graph visualizatio
+        //sets up graph visualization
         //scale: 1 x axis unit is 1 ms (3600000 is 1 hour);
         graph.getViewport().setMinY(-50);
         graph.getViewport().setMaxY(50);

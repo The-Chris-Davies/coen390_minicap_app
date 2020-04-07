@@ -19,20 +19,20 @@ import com.jjoe64.graphview.GraphView;
 import java.text.DateFormat;
 import java.util.ArrayList;
 
-public class HeartrateListAdapter extends RecyclerView.Adapter<HeartrateListAdapter.ViewHolder> {
+public class TemperatureListAdapter extends RecyclerView.Adapter<TemperatureListAdapter.ViewHolder> {
     private Context context;
-    private ArrayList<Heartrate> heartrates;
+    private ArrayList<Temperature> temperatures;
     private GraphView graph;
     private int selected;
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView heartrate;
+        private TextView temperature;
         private TextView timestamp;
 
         ViewHolder(@NonNull final View itemView) {
             super(itemView);
 
-            heartrate = itemView.findViewById(R.id.value);
+            temperature = itemView.findViewById(R.id.value);
             timestamp = itemView.findViewById(R.id.timestamp);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -42,15 +42,15 @@ public class HeartrateListAdapter extends RecyclerView.Adapter<HeartrateListAdap
                     notifyItemChanged(selected);
                     //TODO: update the graph to show the selected value
                     //what the hell does this do
-                    //graph.scrollTo((int) heartrates.get(selected).getTimestamp().toDate().getTime(), heartrates.get(selected).getValue().intValue());
+                    //graph.scrollTo((int) temperatures.get(selected).getTimestamp().toDate().getTime(), temperatures.get(selected).getValue().intValue());
                 }
             });
         }
     }
 
-    public HeartrateListAdapter(Context context, ArrayList<Heartrate> heartrates, GraphView graph) {
+    public TemperatureListAdapter(Context context, ArrayList<Temperature> temperatures, GraphView graph) {
         this.context = context;
-        this.heartrates = heartrates;
+        this.temperatures = temperatures;
         this.graph = graph;
         selected = 0;
     }
@@ -65,16 +65,16 @@ public class HeartrateListAdapter extends RecyclerView.Adapter<HeartrateListAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int index) {
-        Heartrate currentHr = heartrates.get(index);
-        holder.heartrate.setText(currentHr.getValue() + " BPM");
-        holder.timestamp.setText(DateFormat.getTimeInstance().format(currentHr.getTimestamp().toDate())
-                        + "\n" + DateFormat.getDateInstance().format(currentHr.getTimestamp().toDate())
+        Temperature currentTemp = temperatures.get(index);
+        holder.temperature.setText(currentTemp.getValue() + "°C");
+        holder.timestamp.setText(DateFormat.getTimeInstance().format(currentTemp.getTimestamp().toDate())
+                + "\n" + DateFormat.getDateInstance().format(currentTemp.getTimestamp().toDate())
         );
         holder.itemView.setBackground(selected == index ? ContextCompat.getDrawable(context , R.drawable.list_entry_border_selected) : ContextCompat.getDrawable(context , R.drawable.list_entry_border));
     }
 
     @Override
     public int getItemCount() {
-        return heartrates.size();
+        return temperatures.size();
     }
 }
