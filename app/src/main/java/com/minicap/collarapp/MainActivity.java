@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     //private CollectionReference dogRef = db.collection("dogs");
 
     ArrayList<String> dogs;
+    Boolean defFlag;
 
     String dog1Id;
     String dog2Id;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private Position position;
     private Heartrate heartrate;
     private Temperature temperature;
-    private TemperatureExternal temperatureExternal;
+    private Temperature temperatureExternal;
     Handler mHandler;
 
     @Override
@@ -83,10 +84,12 @@ public class MainActivity extends AppCompatActivity {
         position = new Position();
         heartrate = new Heartrate();
         temperature = new Temperature();
-        temperatureExternal = new TemperatureExternal();
+        temperatureExternal = new Temperature();
         dogs = new ArrayList<>();
         dog1Id = new String();
         dog2Id = new String();
+        defFlag = false;
+
 
         //Connect to database and give toast
         //Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
@@ -103,25 +106,38 @@ public class MainActivity extends AppCompatActivity {
         //Todo: see below
         //Todo: Use USER'S dog document instead of HpwWiJSGHNbOgJtYi2jM
 
+        //Todo: Set NULL conditions for dogs and queries (so no crashing occurs)
+
         db.collection("dogs").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+
                 if (e != null) {
                     //if error has occurred
                     Log.e(TAG, "Error in dogs snapshotListener: ", e);
                     return;
                 }
-
 //                dog1Id = queryDocumentSnapshots.get(0);
 //                dog2Id = queryDocumentSnapshots.get(1);
+                dogs.clear();
 
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     dogs.add(documentSnapshot.getId());
-                    Log.i(TAG, documentSnapshot.getId());
+                }
+                for (String dog : dogs) {
+                    Log.i(TAG, dog);
+                }
+
+                if (defFlag == false) {
+                    //Set dog default path
+                    //set default UI
+                    defFlag = true;
                 }
 
             }
         });
+
 
         posRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/position");
         extTempRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/external_temperature");
@@ -149,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
         //External temperature
         queryLatestExternalTemperatureDocument();
     }
+
+    //Todo: Create method to update whole UI, pass dog key as argument
 
     //On phone back button pressed return to MainActivity
     @Override
