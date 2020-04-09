@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,9 +35,14 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.TextView;
@@ -49,6 +55,12 @@ public class HeartrateActivity extends AppCompatActivity {
     private CollectionReference mHRRef = mDocRef.collection("heartrate");
     private static final String TAG = "HeartrateActivity";
 
+    private RecyclerView heartrateList;
+    private RecyclerView.Adapter heartrateAdapter;
+    private RecyclerView.LayoutManager heartrateLayoutManager;
+
+    private ArrayList<Heartrate> heartrates;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +72,34 @@ public class HeartrateActivity extends AppCompatActivity {
 
         final GraphView graph = findViewById(R.id.graph);
 
+        heartrateList = findViewById(R.id.heartrateList);
+        heartrateLayoutManager = new LinearLayoutManager(this);
+
         series = new LineGraphSeries<DataPoint>();
         series.setColor(Color.RED);
         series.setDrawDataPoints(true);
         series.setTitle("heartrate");
+
+        series.setOnDataPointTapListener(new OnDataPointTapListener() {
+            @Override
+            public void onTap(Series series, DataPointInterface dataPoint) {
+                for(int i = heartrates.size()-1; i >= 0; i--) {
+                    if(heartrates.get(i).getTimestamp().toDate().getTime() == dataPoint.getX()) {
+                        heartrateList.scrollToPosition(i);
+                        //run button's callback after recyclerView has drawn it (to prevent null reference)
+                        final int finalI = i;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG,"clicked on index " + finalI);
+                                heartrateList.findViewHolderForAdapterPosition(finalI).itemView.performClick();
+                            }
+                        },10);
+                    }
+                }
+            }
+        });
+
         graph.addSeries(series);
 
         setupGraph(graph);
@@ -78,7 +114,7 @@ public class HeartrateActivity extends AppCompatActivity {
                     return;
                 }
 
-                ArrayList<Heartrate> heartrates = new ArrayList();
+                heartrates = new ArrayList();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
                     //check if value is a string
                     if(documentSnapshot.getData().get("value") instanceof String) {
@@ -101,13 +137,18 @@ public class HeartrateActivity extends AppCompatActivity {
                 }
 
                 //sort temperature list
-                Collections.sort(heartrates);
+                Collections.sort(heartrates, Collections.reverseOrder());
+
+                //add the heartrates to the arrayList
+                heartrateAdapter = new HeartrateListAdapter(HeartrateActivity.this, heartrates, graph);
+                heartrateList.setAdapter(heartrateAdapter);
+                heartrateList.setLayoutManager(heartrateLayoutManager);
+                heartrateList.getAdapter().notifyDataSetChanged();   //probably not necessary
 
                 //generate list of points
                 series.resetData(new DataPoint[0]);
-
-                for (Heartrate heartrate : heartrates)
-                    series.appendData(new DataPoint(heartrate.getTimestamp().toDate().getTime(), heartrate.getValue()), true, 24*60);
+                for (int i = heartrates.size()-1; i >= 0; i--)
+                    series.appendData(new DataPoint(heartrates.get(i).getTimestamp().toDate().getTime(), heartrates.get(i).getValue()), true, 24*60);
             }
         });
     }
