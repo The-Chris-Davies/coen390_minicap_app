@@ -10,55 +10,26 @@ tools:context=".TemperatureActivity">
         android:id="@+id/graph"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/intLabel"
+        app:layout_constraintBottom_toTopOf="@+id/valueLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/extLabel"
+        android:id="@+id/valueLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="External Temperature"
-        app:layout_constraintBottom_toTopOf="@+id/extTemperatureList"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="@+id/intLabel" />
-
-    <TextView
-        android:id="@+id/intLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Internal Temperature"
-        app:layout_constraintBottom_toTopOf="@+id/temperatureList"
+        android:text="Selected Temperature:"
+        app:layout_constraintBottom_toTopOf="@+id/valDisplay"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/extTemperatureList"
+    <include
+        android:id="@+id/valDisplay"
+        layout="@layout/list_layout"
         android:layout_width="0dp"
-        android:layout_height="120dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/temperatureList"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
