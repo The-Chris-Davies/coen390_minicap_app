@@ -55,9 +55,8 @@ public class HeartrateActivity extends AppCompatActivity {
     private CollectionReference mHRRef = mDocRef.collection("heartrate");
     private static final String TAG = "HeartrateActivity";
 
-    private RecyclerView heartrateList;
-    private RecyclerView.Adapter heartrateAdapter;
-    private RecyclerView.LayoutManager heartrateLayoutManager;
+    private TextView valDisp;
+    private TextView timeDisp;
 
     private ArrayList<Heartrate> heartrates;
 
@@ -70,10 +69,10 @@ public class HeartrateActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
 
-        final GraphView graph = findViewById(R.id.graph);
+        valDisp = findViewById(R.id.value);
+        timeDisp = findViewById(R.id.timestamp);
 
-        heartrateList = findViewById(R.id.heartrateList);
-        heartrateLayoutManager = new LinearLayoutManager(this);
+        final GraphView graph = findViewById(R.id.graph);
 
         series = new LineGraphSeries<DataPoint>();
         series.setColor(Color.RED);
@@ -85,14 +84,17 @@ public class HeartrateActivity extends AppCompatActivity {
             public void onTap(Series series, DataPointInterface dataPoint) {
                 for(int i = heartrates.size()-1; i >= 0; i--) {
                     if(heartrates.get(i).getTimestamp().toDate().getTime() == dataPoint.getX()) {
-                        heartrateList.scrollToPosition(i);
                         //run button's callback after recyclerView has drawn it (to prevent null reference)
                         final int finalI = i;
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 Log.d(TAG,"clicked on index " + finalI);
-                                heartrateList.findViewHolderForAdapterPosition(finalI).itemView.performClick();
+                                Heartrate currentHr = heartrates.get(finalI);
+                                valDisp.setText(currentHr.getValue() + " BPM");
+                                timeDisp.setText(DateFormat.getTimeInstance().format(currentHr.getTimestamp().toDate())
+                                        + "\n" + DateFormat.getDateInstance().format(currentHr.getTimestamp().toDate())
+                                );
                             }
                         },10);
                     }
@@ -138,12 +140,6 @@ public class HeartrateActivity extends AppCompatActivity {
 
                 //sort temperature list
                 Collections.sort(heartrates, Collections.reverseOrder());
-
-                //add the heartrates to the arrayList
-                heartrateAdapter = new HeartrateListAdapter(HeartrateActivity.this, heartrates, graph);
-                heartrateList.setAdapter(heartrateAdapter);
-                heartrateList.setLayoutManager(heartrateLayoutManager);
-                heartrateList.getAdapter().notifyDataSetChanged();   //probably not necessary
 
                 //generate list of points
                 series.resetData(new DataPoint[0]);
