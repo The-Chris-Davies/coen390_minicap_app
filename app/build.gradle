@@ -37,4 +37,5 @@ dependencies {
     implementation 'com.jjoe64:graphview:4.2.2'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'pl.pawelkleczkowski.customgauge:CustomGauge:1.0.4'
 }

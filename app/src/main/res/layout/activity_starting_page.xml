@@ -5,7 +5,7 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_blue_dark"
+    android:background="@android:color/background_light"
     tools:context=".startingPage">
 
 
@@ -16,23 +16,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.254"
+        app:layout_constraintVertical_bias="0.176"
         app:srcCompat="@drawable/loadingpagelogo" />
 
-    <Button
-        android:id="@+id/starting_button"
-        android:layout_width="253dp"
-        android:layout_height="103dp"
-        android:background="@drawable/custom_button"
-        android:text="Enter"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:textSize="37sp"
+    <ImageView
+        android:id="@+id/enterButton"
+        android:layout_width="237dp"
+        android:layout_height="105dp"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.776"
-
-        />
+        app:layout_constraintVertical_bias="0.751"
+        app:srcCompat="@drawable/enter_button_new" />
 </androidx.constraintlayout.widget.ConstraintLayout>

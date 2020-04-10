@@ -6,10 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class startingPage extends AppCompatActivity {
 
-    protected Button starting_button=null;
+    protected ImageView enterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +22,8 @@ public class startingPage extends AppCompatActivity {
 
     protected void setupUI()
     {
-        starting_button=findViewById(R.id.starting_button);
-        starting_button.setOnClickListener(onClickGoNextButton);
+        enterButton=findViewById(R.id.enterButton);
+        enterButton.setOnClickListener(onClickGoNextButton);
     }
 
     private void sendMessage()

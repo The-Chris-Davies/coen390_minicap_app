@@ -5,21 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/background_main_activity"
+    android:background="@drawable/background_main_activity_blue_white_new"
     >
 
     <TextView
         android:id="@+id/temperatureExternalTextView"
-        android:layout_width="303dp"
-        android:layout_height="47dp"
+        android:layout_width="51dp"
+        android:layout_height="23dp"
         android:clickable="true"
-        android:textSize="18sp"
+        android:text="Internal"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.407"
+        app:layout_constraintHorizontal_bias="0.725"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.551" />
+        app:layout_constraintVertical_bias="0.81" />
 
     <TextView
         android:id="@+id/heartRateTextView"
@@ -49,28 +50,121 @@
 
     <TextView
         android:id="@+id/temperatureTextView"
-        android:layout_width="303dp"
-        android:layout_height="47dp"
+        android:layout_width="85dp"
+        android:layout_height="23dp"
         android:clickable="true"
-        android:text="Processing Temperatures..."
-        android:textSize="18sp"
+        android:text="External"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.416"
+        app:layout_constraintHorizontal_bias="0.223"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.482" />
+        app:layout_constraintVertical_bias="0.81" />
 
     <TextView
         android:id="@+id/latestUpdateTextView"
         android:layout_width="323dp"
         android:layout_height="39dp"
+        android:text="Processing update..."
         android:textAlignment="center"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
+        app:layout_constraintVertical_bias="1.0" />
+
+    <pl.pawelkleczkowski.customgauge.CustomGauge
+        android:id="@+id/temperatureGauge1"
+        android:layout_width="174dp"
+        android:layout_height="137dp"
+        android:layout_below="@id/temperatureGauge2"
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        app:gaugeEndValue="50"
+        app:gaugePointEndColor="@color/colorAccent"
+        app:gaugePointStartColor="@android:color/holo_blue_light"
+        app:gaugeStartAngle="135"
+        app:gaugeStartValue="0"
+        app:gaugeStrokeCap="ROUND"
+        app:gaugeStrokeColor="@color/colorBackground"
+        app:gaugeStrokeWidth="10dp"
+        app:gaugeSweepAngle="270"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.067"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.841" />
+
+    <pl.pawelkleczkowski.customgauge.CustomGauge
+        android:id="@+id/temperatureGauge2"
+        android:layout_width="174dp"
+        android:layout_height="137dp"
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        app:gaugeEndValue="70"
+        app:gaugePointEndColor="@color/colorAccent"
+        app:gaugePointStartColor="@android:color/holo_blue_light"
+        app:gaugeStartAngle="135"
+        app:gaugeStartValue="-70"
+        app:gaugeStrokeCap="ROUND"
+        app:gaugeStrokeColor="@color/colorBackground"
+        app:gaugeStrokeWidth="10dp"
+        app:gaugeSweepAngle="270"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.843"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.841" />
+
+    <TextView
+        android:id="@+id/temperatureGauge1TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:text="processing..."
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.204"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.777" />
+
+    <TextView
+        android:id="@+id/temperatureGauge2TextView"
+        android:layout_width="104dp"
+        android:layout_height="25dp"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:text="processing..."
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.777" />
+
+    <TextView
+        android:id="@+id/staticTemperatureTextView"
+        android:layout_width="156dp"
+        android:layout_height="34dp"
+        android:text="Temperatures"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.458"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.614" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

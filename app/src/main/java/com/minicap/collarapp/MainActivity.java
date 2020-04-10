@@ -8,12 +8,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -30,7 +27,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+
+import pl.pawelkleczkowski.customgauge.CustomGauge;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +37,12 @@ public class MainActivity extends AppCompatActivity {
     protected TextView locationTextView;
     protected TextView temperatureExternalTextView;
     protected TextView latestUpdateTextView;
+
+    //Guages and their texts
+    protected CustomGauge temperatureGauge1;
+    protected CustomGauge temperatureGauge2;
+    protected TextView temperatureGuage1TextView;
+    protected TextView temperatureGuage2TextView;
 
     public static final String POSITION_TIMESTAMP = "timestamp";
     public static final String POSITION_VALUE = "value";
@@ -80,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
         latestUpdateTextView = findViewById(R.id.latestUpdateTextView);
         temperatureExternalTextView = findViewById(R.id.temperatureExternalTextView);
 
+        //Guages and their text views
+        temperatureGauge1 = findViewById(R.id.temperatureGauge1);
+        temperatureGauge2 = findViewById(R.id.temperatureGauge2);
+        temperatureGuage1TextView = findViewById(R.id.temperatureGauge1TextView);
+        temperatureGuage2TextView = findViewById(R.id.temperatureGauge2TextView);
+
         //Initialize position, heartrate and temperature objects
         position = new Position();
         heartrate = new Heartrate();
@@ -99,29 +109,26 @@ public class MainActivity extends AppCompatActivity {
         heartRateActivityIntent(heartRateTextView);
         positionActivityIntent(locationTextView);
 
+        //Todo: Create button for temperature, heartrate and position
         //Todo: create registration fragment
         //Todo: new path: UserID/user(1,2,3...)/dog/dog(1,2,3...)/position"
         //Todo: new path: UserID/dog1/position"
         //Todo: On Create initialize dog's ID and use it when referencing other collections (temp, heart, pos, etc.)
-        //Todo: see below
         //Todo: Use USER'S dog document instead of HpwWiJSGHNbOgJtYi2jM
 
         //Todo: Set NULL conditions for dogs and queries (so no crashing occurs)
 
+        //Get dog list
         db.collection("dogs").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
 
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-
                 if (e != null) {
                     //if error has occurred
                     Log.e(TAG, "Error in dogs snapshotListener: ", e);
                     return;
                 }
-//                dog1Id = queryDocumentSnapshots.get(0);
-//                dog2Id = queryDocumentSnapshots.get(1);
-                dogs.clear();
-
+                    dogs.clear();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     dogs.add(documentSnapshot.getId());
                 }
@@ -134,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                     //set default UI
                     defFlag = true;
                 }
-
             }
         });
 
@@ -337,8 +343,10 @@ public class MainActivity extends AppCompatActivity {
                         Double value = temperature.getValue();
                         Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
 
-                        temperatureTextView.setText("Body Temperature: " + value + "°C");
+                        //temperatureTextView.setText("Body Temperature: " + value + "°C");
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+                        temperatureGauge1.setValue((int)Math.round(value));
+                        temperatureGuage1TextView.setText(value + "°C");
                     }
                 });
     }
@@ -373,8 +381,10 @@ public class MainActivity extends AppCompatActivity {
                         Double value = temperatureExternal.getValue();
                         Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
 
-                        temperatureExternalTextView.setText("Environmental Temperature: " + value + "°C");
+                        //temperatureExternalTextView.setText("Environmental Temperature: " + value + "°C");
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+                        temperatureGauge2.setValue((int)Math.round(value));
+                        temperatureGuage2TextView.setText(value + "°C");
                     }
                 });
     }
