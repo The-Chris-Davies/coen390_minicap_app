@@ -9,7 +9,7 @@ public class Dog {
     //battery percent
     private double batteryLife;
     //the dog's ID
-    private int id;
+    private String id;
 
     //arraylists storing past values from the sensors
     private ArrayList<Position> positions;
@@ -17,11 +17,18 @@ public class Dog {
     private ArrayList<Temperature> temperatures;
     private ArrayList<Temperature> externalTemperatures;
 
-    public Dog(int id) {
+    public Dog() {};
+
+    public Dog(String id) {
         this.id = id;
     }
 
-    public Dog(String name, double batteryLife, int id, ArrayList<Position> positions, ArrayList<Heartrate> heartrates, ArrayList<Temperature> temperatures, ArrayList<Temperature> externalTemperatures) {
+    public Dog(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public Dog(String name, double batteryLife, String id, ArrayList<Position> positions, ArrayList<Heartrate> heartrates, ArrayList<Temperature> temperatures, ArrayList<Temperature> externalTemperatures) {
         this.name = name;
         this.batteryLife = batteryLife;
         this.id = id;
@@ -79,11 +86,11 @@ public class Dog {
          this.name = name;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }
