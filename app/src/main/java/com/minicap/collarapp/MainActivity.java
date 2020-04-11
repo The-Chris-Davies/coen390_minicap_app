@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
                 for (String dog : dogs) {
                     Log.i(TAG, dog);
                 }
-
                 if (defFlag == false) {
                     //Set dog default path
                     //set default UI
@@ -200,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
     //On phone back button pressed return to MainActivity
     @Override
     public void onBackPressed() {
-        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(returnMain);
+        //Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        //startActivity(returnMain);
         finish();
     }
 
@@ -425,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable m_Runnable = new Runnable() {
         public void run()
         {
-            Toast.makeText(MainActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this,"Refresh",Toast.LENGTH_SHORT).show();
             //Position
             queryLatestPositionDocument();  //Find latest document
             updateChangedPositionDocument();    //Update text with document data that was changed

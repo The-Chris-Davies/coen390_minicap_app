@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
-    tools:context=".startingPage">
+    tools:context=".SplashPage">
 
 
     <ImageView
@@ -21,22 +21,31 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/dogList"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="344dp"
+        android:layout_height="168dp"
         android:background="@drawable/list_entry_border"
+        android:clickable="true"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/dogSelectLabel"
+        app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="@+id/dogSelectLabel"
-        app:layout_constraintTop_toBottomOf="@+id/dogSelectLabel" />
+
+        app:layout_constraintTop_toBottomOf="@+id/dogSelectLabel"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/dogSelectLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select A Dog:"
+        android:fontFamily="@font/abeezee"
+        android:text="Select a dog"
+        android:textColor="#2196F3"
         android:textSize="28sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/dogList"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.583" />
 </androidx.constraintlayout.widget.ConstraintLayout>
