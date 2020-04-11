@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1083281067844-fr47d1vlfetkbssb34ccv12mh3vt1sh6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.minicap.collarapp",
+            "certificate_hash": "347606fa100d03675148a4f2f9893816d3b7a820"
+          }
+        },
+        {
           "client_id": "1083281067844-k2lnb8j45jrqv2i8apkhq0u02drvc57l.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1083281067844-k2lnb8j45jrqv2i8apkhq0u02drvc57l.apps.googleusercontent.com",
+              "client_id": "1083281067844-3q778mill19p6lqu3da77ictns69pj11.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
