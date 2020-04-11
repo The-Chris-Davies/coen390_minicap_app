@@ -1,16 +1,40 @@
 package com.minicap.collarapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class startingPage extends AppCompatActivity {
+    private final String TAG = "StartingPage";
 
-    protected ImageView enterButton;
+    private CollectionReference mDogRef = FirebaseFirestore.getInstance().collection("dogs");
+
+    private RecyclerView dogList;
+    private RecyclerView.Adapter dogAdapter;
+    private RecyclerView.LayoutManager dogLayoutManager;
+
+    ArrayList<Dog> dogs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,23 +46,39 @@ public class startingPage extends AppCompatActivity {
 
     protected void setupUI()
     {
-        enterButton=findViewById(R.id.enterButton);
-        enterButton.setOnClickListener(onClickGoNextButton);
+
+        dogList = findViewById(R.id.dogList);
+        dogLayoutManager = new LinearLayoutManager(this);
+
+        mDogRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    //if error has occurred
+                    Log.e(TAG, "Error in snapshotListener: ", e);
+                    return;
+                }
+
+                //add the positions to the array
+                dogs = new ArrayList();
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots)
+                    dogs.add(new Dog(documentSnapshot.getString("name"), documentSnapshot.getId()));
+                Log.d(TAG, "Found " + dogs.size() + " dogs in the firebase");
+                for(Dog dog: dogs) Log.d(TAG, "Dog: " + dog.getName() + " id: " + dog.getId());
+
+                //if no positions available, continue
+                if (dogs.isEmpty()) {
+                    Toast.makeText(startingPage.this, "Please activate a collar", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "No collars detected for this account");
+                    return;
+                }
+
+                //add the dogs to the arrayList
+                dogAdapter = new DogListAdapter(startingPage.this, dogs);
+                dogList.setAdapter(dogAdapter);
+                dogList.setLayoutManager(dogLayoutManager);
+                dogList.getAdapter().notifyDataSetChanged();   //probably not necessary
+            }
+        });
     }
-
-    private void sendMessage()
-    {
-        Intent intent =new Intent(this,MainActivity.class);
-        startActivity(intent);
-    }
-
-    private Button.OnClickListener onClickGoNextButton=new Button.OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            sendMessage();
-        }
-    };
 }
-
-
