@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show(getSupportFragmentManager(), "changeDogDialogFragment");
                 return true;
             case R.id.alertToggle:
-                toggleAlerts();
+                toggleAlerts(findViewById(R.id.alertToggle));
                 return true;
         }
 
@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity {
         finish();
     };
 
-    protected void toggleAlerts() {
+    protected void toggleAlerts(View view) {
         Intent serviceIntent = new Intent(this, AlertService.class);
         serviceIntent.putExtra("dogID", currDog);
         if(AlertService.isRunning) {

@@ -114,36 +114,40 @@ public class AlertService extends Service {
                 //sort temperature list, most recent first
                 Collections.sort(internalTemps, Collections.reverseOrder());
 
-                //if last update was more than 15 minutes ago, do nothing (ignore any previous alerts)
-                if(Timestamp.now().getSeconds() - 60 * 15 > internalTemps.get(0).getTimestamp().getSeconds())
-                    return;
-
                 //flags to indicate hi / lo temp alerts
                 Boolean highTempFlag = true, lowTempFlag = true;
 
                 for(int i = 0; i < internalTemps.size(); i++) {
                     //if time between readings is >15 minutes, exit (they're not part of the same walk)
-                    if(i >= 1 && (internalTemps.get(i).getTimestamp().getSeconds() + 60*15 < internalTemps.get(i-1).getTimestamp().getSeconds()))
+                    if(i >= 1 && internalTemps.get(i).getTimestamp().getSeconds() + 60*15 < internalTemps.get(i-1).getTimestamp().getSeconds()) {
+                        Log.d(TAG, "internal temp timeout");
                         break;
+                    }
                     //if the max flag is still set, and update was over the max, check the timestamp
                     if (highTempFlag && internalTemps.get(i).getValue() > highIntTemp) {
-                        if (internalTemps.get(i).getTimestamp().getSeconds() + 60 * highIntTime < internalTemps.get(0).getTimestamp().getSeconds()) {
+                        Log.d(TAG, "internal temp over");
+                        if ((internalTemps.get(i).getTimestamp().getSeconds() + 60 * highIntTime < internalTemps.get(0).getTimestamp().getSeconds())) {
                             raiseTempAlert(false, true);
                             break;
                         }
-                        continue;
                     }
-                    highTempFlag = false;
+                    else {
+                        Log.d(TAG, "not high temp");
+                        highTempFlag = false;
+                    }
 
                     //do the same for low temp
                     if(lowTempFlag && internalTemps.get(i).getValue() < lowIntTemp) {
+                        Log.d(TAG, "internal temp under");
                         if (internalTemps.get(i).getTimestamp().getSeconds() + 60 * lowIntTime < internalTemps.get(0).getTimestamp().getSeconds()) {
                             raiseTempAlert(false, false);
                             break;
                         }
-                        continue;
                     }
-                    lowTempFlag = false;
+                    else {
+                        Log.d(TAG, "not low temp");
+                        lowTempFlag = false;
+                    }
                 }
             }
         });
@@ -182,41 +186,43 @@ public class AlertService extends Service {
                 //sort temperature list, most recent first
                 Collections.sort(externalTemps, Collections.reverseOrder());
 
-                //if last update was more than 15 minutes ago, do nothing (ignore any previous alerts)
-                if(Timestamp.now().getSeconds() - 60 * 15 > externalTemps.get(0).getTimestamp().getSeconds())
-                    return;
-
                 //flags to indicate hi / lo temp alerts
                 Boolean highTempFlag = true, lowTempFlag = true;
 
                 for(int i = 0; i < externalTemps.size(); i++) {
                     //if time between readings is >15 minutes, exit (they're not part of the same walk)
-                    if(externalTemps.get(i).getTimestamp().getSeconds() + 60*15 < externalTemps.get(i-1).getTimestamp().getSeconds())
+                    if(i >= 1 && externalTemps.get(i).getTimestamp().getSeconds() + 60*15 < externalTemps.get(i-1).getTimestamp().getSeconds()) {
+                        Log.d(TAG, "external temp timeout");
                         break;
+                    }
                     //if the max flag is still set, and update was over the max, check the timestamp
                     if (highTempFlag && externalTemps.get(i).getValue() > highExtTemp) {
-                        if (i >= 1 && (externalTemps.get(i).getTimestamp().getSeconds() + 60 * highExtTime < externalTemps.get(0).getTimestamp().getSeconds())) {
+                        Log.d(TAG, "external temp over");
+                        if ((externalTemps.get(i).getTimestamp().getSeconds() + 60 * highExtTime < externalTemps.get(0).getTimestamp().getSeconds())) {
                             raiseTempAlert(true, true);
                             break;
                         }
-                        continue;
                     }
-                    highTempFlag = false;
+                    else {
+                        Log.d(TAG, "not high temp");
+                        highTempFlag = false;
+                    }
 
                     //do the same for low temp
                     if(lowTempFlag && externalTemps.get(i).getValue() < lowExtTemp) {
+                        Log.d(TAG, "external temp under");
                         if (externalTemps.get(i).getTimestamp().getSeconds() + 60 * lowExtTime < externalTemps.get(0).getTimestamp().getSeconds()) {
                             raiseTempAlert(true, false);
                             break;
                         }
-                        continue;
                     }
-                    lowTempFlag = false;
+                    else {
+                        Log.d(TAG, "not low temp");
+                        lowTempFlag = false;
+                    }
                 }
             }
         });
-
-        raiseTempAlert(true, true);
 
         //todo: add battery alert and watchdog for update rate
 
@@ -239,7 +245,7 @@ public class AlertService extends Service {
     }
 
     private void raiseTempAlert(boolean isExt, boolean isHigh) {
-        final String int_ext = isExt ? "External" : "Body";
+        final String int_ext = isExt ? "Outside" : "Body";
         final String hi_lo = isHigh ? "High" : "Low";
 
         //create alert notification!
@@ -247,7 +253,7 @@ public class AlertService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, "Whistle_Alert")
                 .setContentTitle("Whistle Collar " + hi_lo + " " + int_ext + " Temperature Alert!")
-                .setContentText("The " + int_ext + " temperature of your dog is too " + hi_lo + " and has triggered an alert!")
+                .setContentText("The " + int_ext + " temperature of your dog is too " + hi_lo + "!")
                 .setSmallIcon(R.drawable.background_logo)
                 .setContentIntent(pendingIntent)
                 .build();
