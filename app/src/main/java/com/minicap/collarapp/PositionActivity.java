@@ -48,8 +48,10 @@ import java.util.Objects;
 public class PositionActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
-    private CollectionReference mPosRef = mDocRef.collection("position");
+    //private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
+    //private CollectionReference mPosRef = mDocRef.collection("position");
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference mPosRef;
 
     private RecyclerView positionList;
     private RecyclerView.Adapter positionAdapter;
@@ -58,6 +60,8 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
     private static final String POSITION_VALUE = "value";
     private static final String TAG = "PositionActivity";
     private ArrayList<Position> positions;
+
+    private String currDog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,11 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
         positionList = findViewById(R.id.positionList);
         positionLayoutManager = new LinearLayoutManager(this);
 
+        //Get current dog from main activity
+        getCurrentDog();
+
+        //Set path for position using currently selected dog
+        mPosRef = db.collection("dogs/" + currDog + "/position");
 
         // Obtain the mapView and get notified when the map is ready to be used.
         MapView mapView = (MapView) findViewById(R.id.map);
@@ -87,6 +96,7 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public boolean onSupportNavigateUp(){
         Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        returnMain.putExtra("dogID", currDog);
         startActivity(returnMain);
         finish();
         return true;
@@ -96,8 +106,19 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onBackPressed() {
         Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        returnMain.putExtra("dogID", currDog);
         startActivity(returnMain);
         finish();
+    }
+
+    //Get dog from main activity and pass to position activity
+    public void getCurrentDog() {
+        currDog = new String();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            currDog = bundle.getString("dogID");
+            Toast.makeText(this, "Map view", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

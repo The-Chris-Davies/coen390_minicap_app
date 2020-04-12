@@ -51,14 +51,17 @@ import android.widget.Toast;
 public class HeartrateActivity extends AppCompatActivity {
 
     private LineGraphSeries<DataPoint> series;
-    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
-    private CollectionReference mHRRef = mDocRef.collection("heartrate");
+    //private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
+    //private CollectionReference mHRRef = mDocRef.collection("heartrate");
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference mHRRef;
     private static final String TAG = "HeartrateActivity";
 
     private TextView valDisp;
     private TextView timeDisp;
 
     private ArrayList<Heartrate> heartrates;
+    private String currDog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +72,16 @@ public class HeartrateActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
 
+        //Initialize views
         valDisp = findViewById(R.id.value);
         timeDisp = findViewById(R.id.timestamp);
-
         final GraphView graph = findViewById(R.id.graph);
+
+        //Get current dog from main activity
+        getCurrentDog();
+
+        //Set path for heartrate using currently selected dog
+        mHRRef = db.collection("dogs/" + currDog + "/heartrate");
 
         series = new LineGraphSeries<DataPoint>();
         series.setColor(Color.RED);
@@ -153,6 +162,7 @@ public class HeartrateActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp(){
         Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        returnMain.putExtra("dogID", currDog);
         startActivity(returnMain);
         finish();
         return true;
@@ -162,8 +172,19 @@ public class HeartrateActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        returnMain.putExtra("dogID", currDog);
         startActivity(returnMain);
         finish();
+    }
+
+    //Get dog from main activity and pass to position activity
+    public void getCurrentDog() {
+        currDog = new String();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            currDog = bundle.getString("dogID");
+            Toast.makeText(this, "Map view", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupGraph(GraphView graph) {

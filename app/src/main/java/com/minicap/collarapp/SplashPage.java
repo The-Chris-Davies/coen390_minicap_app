@@ -37,9 +37,10 @@ public class SplashPage extends AppCompatActivity {
         setupUI();
     }
 
+    //Todo: Create background colour change when selecting dog
+
     protected void setupUI()
     {
-
         dogList = findViewById(R.id.dogList);
         dogLayoutManager = new LinearLayoutManager(this);
 

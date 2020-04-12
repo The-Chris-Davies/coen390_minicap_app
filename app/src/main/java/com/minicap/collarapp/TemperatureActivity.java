@@ -54,14 +54,15 @@ public class TemperatureActivity extends AppCompatActivity {
 
     private GraphView graph;
     private LineGraphSeries<DataPoint> extSeries,intSeries;
-    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("dogs/HpwWiJSGHNbOgJtYi2jM/");
-    private CollectionReference mTempRef = mDocRef.collection("temperature");
-    private CollectionReference mExtTempRef = mDocRef.collection("external_temperature");
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference mTempRef;
+    private CollectionReference mExtTempRef;
     private static final String TAG = "TemperatureActivity";
 
     //textviews for displaying the selected value
     private TextView valDisp;
     private TextView timeDisp;
+    private String currDog;
 
     ArrayList<Temperature> internalTemps;
     ArrayList<Temperature> externalTemps;
@@ -75,10 +76,17 @@ public class TemperatureActivity extends AppCompatActivity {
         assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //Display back button
 
+        //Initialize views
         graph = findViewById(R.id.graph);
-
         valDisp = findViewById(R.id.value);
         timeDisp = findViewById(R.id.timestamp);
+
+        //Get current dog from main activity
+        getCurrentDog();
+
+        //Set path for temperature and external temperature using currently selected dog
+        mTempRef = db.collection("dogs/" + currDog + "/temperature");
+        mExtTempRef = db.collection("dogs/" + currDog + "/external_temperature");
 
         intSeries = new LineGraphSeries<DataPoint>();
         intSeries.setColor(Color.BLUE);
@@ -237,6 +245,7 @@ public class TemperatureActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp(){
         Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        returnMain.putExtra("dogID", currDog);
         startActivity(returnMain);
         finish();
         return true;
@@ -246,8 +255,19 @@ public class TemperatureActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        returnMain.putExtra("dogID", currDog);
         startActivity(returnMain);
         finish();
+    }
+
+    //Get dog from main activity and pass to position activity
+    public void getCurrentDog() {
+        currDog = new String();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            currDog = bundle.getString("dogID");
+            Toast.makeText(this, "Map view", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupGraph(GraphView graph) {

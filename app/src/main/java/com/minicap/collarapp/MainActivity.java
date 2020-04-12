@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
@@ -36,6 +39,8 @@ import pl.pawelkleczkowski.customgauge.CustomGauge;
 
 public class MainActivity extends AppCompatActivity {
 
+    //To change background android:background="@drawable/background_main_activity_blue_white_new"
+
     protected TextView temperatureTextView;
     protected TextView heartRateTextView;
     protected TextView locationTextView;
@@ -47,17 +52,17 @@ public class MainActivity extends AppCompatActivity {
     protected CustomGauge temperatureGauge2;
     protected TextView temperatureGuage1TextView;
     protected TextView temperatureGuage2TextView;
+    protected TextView welcomeTextView;
+    protected Button temperatureButton;
+    protected Button heartrateButton;
 
     public static final String POSITION_TIMESTAMP = "timestamp";
     public static final String POSITION_VALUE = "value";
     private static final String TAG = "MainActivity";
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DocumentReference mDocRef = db.document("dogs/HpwWiJSGHNbOgJtYi2jM/position/YXT3F0MuJpiUzJStuqNN");
 
     //First set to dogs (CHANGE TO USER'S DOG THAT IS INPUT)
-    //private DocumentReference dogDocRef = db.document("dogs/HpwWiJSGHNbOgJtYi2jM");
-    //private CollectionReference posRef = dogDocRef.collection("position");
     private CollectionReference posRef;
     private CollectionReference tempRef;
     private CollectionReference heartRef;
@@ -66,9 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> dogs;
     Boolean defFlag;
-
-    String dog1Id;
-    String dog2Id;
+    String currDog;
 
     private Position position;
     private Heartrate heartrate;
@@ -81,12 +84,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Initialize text views
+        //Initialize text views and buttons
         temperatureTextView = findViewById(R.id.temperatureTextView);
         heartRateTextView = findViewById(R.id.heartRateTextView);
         locationTextView = findViewById(R.id.locationTextView);
         latestUpdateTextView = findViewById(R.id.latestUpdateTextView);
         temperatureExternalTextView = findViewById(R.id.temperatureExternalTextView);
+        temperatureButton = findViewById(R.id.temperatureButton);
+        heartrateButton = findViewById(R.id.heartrateButton);
+        welcomeTextView = findViewById(R.id.welcomeTextView);
 
         //Guages and their text views
         temperatureGauge1 = findViewById(R.id.temperatureGauge1);
@@ -99,18 +105,17 @@ public class MainActivity extends AppCompatActivity {
         heartrate = new Heartrate();
         temperature = new Temperature();
         temperatureExternal = new Temperature();
-        dogs = new ArrayList<>();
-        dog1Id = new String();
-        dog2Id = new String();
-        defFlag = false;
 
+        currDog = new String();
+        dogs = new ArrayList<>();
+        defFlag = false;
 
         //Connect to database and give toast
         //Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
 
         //Clickable text view to switch to activities
-        temperatureActivityIntent(temperatureTextView);
-        heartRateActivityIntent(heartRateTextView);
+        temperatureActivityIntent(temperatureButton);
+        heartRateActivityIntent(heartrateButton);
         positionActivityIntent(locationTextView);
 
         //Todo: Create button for temperature, heartrate and position
@@ -122,36 +127,38 @@ public class MainActivity extends AppCompatActivity {
 
         //Todo: Set NULL conditions for dogs and queries (so no crashing occurs)
 
-        //Get dog list
-        db.collection("dogs").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        //Pass arguments from splash page to main activity -> generate dog path
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            currDog = bundle.getString("dogID");
+            db.document("dogs/" + currDog)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    String name = document.getString("name");
+                                    welcomeTextView.setText("elcome: " + name);
+                                    Log.d(TAG, "Document found");
+                                }
+                                else {
+                                    Log.d(TAG, "No document found");
+                                }
+                            }
+                            else {
+                                Log.d(TAG, "Failed with ", task.getException());
+                            }
+                        }
+                    });
+            Toast.makeText(this, "Dog selected", Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    //if error has occurred
-                    Log.e(TAG, "Error in dogs snapshotListener: ", e);
-                    return;
-                }
-                    dogs.clear();
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    dogs.add(documentSnapshot.getId());
-                }
-                for (String dog : dogs) {
-                    Log.i(TAG, dog);
-                }
-                if (defFlag == false) {
-                    //Set dog default path
-                    //set default UI
-                    defFlag = true;
-                }
-            }
-        });
-
-
-        posRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/position");
-        extTempRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/external_temperature");
-        heartRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/heartrate");
-        tempRef = db.collection("dogs/HpwWiJSGHNbOgJtYi2jM/temperature");
+        posRef = db.collection("dogs/" + currDog + "/position");
+        extTempRef = db.collection("dogs/" + currDog + "/external_temperature");
+        heartRef = db.collection("dogs/" + currDog + "/heartrate");
+        tempRef = db.collection("dogs/" + currDog + "/temperature");
 
         //Set up handler for page reloading after 5sec
         this.mHandler = new Handler();
@@ -189,8 +196,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.item1:
-                Toast.makeText(this, "Dog selected", Toast.LENGTH_SHORT);
+            case R.id.dogSelectIcon:
+                Toast.makeText(this, "Dog selected", Toast.LENGTH_SHORT).show();
+                changeDogDialogFragment dialog = new changeDogDialogFragment();
+                dialog.show(getSupportFragmentManager(), "changeDogDialogFragment");
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -199,8 +209,6 @@ public class MainActivity extends AppCompatActivity {
     //On phone back button pressed return to MainActivity
     @Override
     public void onBackPressed() {
-        //Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
-        //startActivity(returnMain);
         finish();
     }
 
@@ -211,22 +219,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Change to temperature activity
-    public void temperatureActivityIntent(TextView temperatureTextView) {
-        temperatureTextView.setOnClickListener(new View.OnClickListener() {
+    public void temperatureActivityIntent(Button temperatureButton) {
+        temperatureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, TemperatureActivity.class);
+                intent.putExtra("dogID", currDog);
                 startActivity(intent);
             }
         });
     }
 
     //Change to heartrate activity
-    public void heartRateActivityIntent(TextView heartRateTextView) {
-        heartRateTextView.setOnClickListener(new View.OnClickListener() {
+    public void heartRateActivityIntent(Button heartrateButton) {
+        heartrateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, HeartrateActivity.class);
+                intent.putExtra("dogID", currDog);
                 startActivity(intent);
             }
         });
@@ -238,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PositionActivity.class);
+                intent.putExtra("dogID", currDog);
                 startActivity(intent);
             }
         });
@@ -306,38 +317,78 @@ public class MainActivity extends AppCompatActivity {
 
     //Dog heartrate query
     public void queryLatestHeartrateDocument() {
-        Task<QuerySnapshot> heartQuery = heartRef
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(1)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
-                                .get(queryDocumentSnapshots.size() - 1);
+//        Task<QuerySnapshot> heartQuery = heartRef
+//                .orderBy("timestamp", Query.Direction.DESCENDING)
+//                .limit(1)
+//                .get()
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
+//                                .get(queryDocumentSnapshots.size() - 1);
+//
+//                        //Get timestamp, Id and value
+//                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+//                        String Id = documentSnapshot.getId();
+//                        heartrate.setTimestamp(timestamp);
+//                        heartrate.setDocumentID(Id);
+//                        //Check if value is string or number and then set to object
+//                        if(documentSnapshot.getData().get("value") instanceof String) {
+//                            Double value = Double.valueOf(documentSnapshot.getString("value"));
+//                            heartrate.setValue(value);
+//                        }
+//                        else {
+//                            Double value = documentSnapshot.getDouble("value");
+//                            heartrate.setValue(value);
+//                        }
+//
+//                        Double value = heartrate.getValue();
+//                        Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
+//
+//                        heartRateTextView.setText("Heartrate: " + value + "BPM");
+//                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+//                    }
+//                });
 
-                        //Get timestamp, Id and value
-                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
-                        String Id = documentSnapshot.getId();
-                        heartrate.setTimestamp(timestamp);
-                        heartrate.setDocumentID(Id);
-                        //Check if value is string or number and then set to object
-                        if(documentSnapshot.getData().get("value") instanceof String) {
-                            Double value = Double.valueOf(documentSnapshot.getString("value"));
-                            heartrate.setValue(value);
+            Task<QuerySnapshot> heartQuery = heartRef
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
+                                    .get(queryDocumentSnapshots.size() - 1);
+
+                            //Get timestamp, Id and value
+                            Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+                            String Id = documentSnapshot.getId();
+                            heartrate.setTimestamp(timestamp);
+                            heartrate.setDocumentID(Id);
+                            //Check if value is string or number and then set to object
+                            if(documentSnapshot.getData().get("value") instanceof String) {
+                                Double value = Double.valueOf(documentSnapshot.getString("value"));
+                                heartrate.setValue(value);
+                            }
+                            else {
+                                Double value = documentSnapshot.getDouble("value");
+                                heartrate.setValue(value);
+                            }
+
+                            Double value = heartrate.getValue();
+                            Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
+
+                            heartRateTextView.setText("Heartrate: " + value + "BPM");
+                            latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
                         }
-                        else {
-                            Double value = documentSnapshot.getDouble("value");
-                            heartrate.setValue(value);
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            heartRateTextView.setText("Heartrate: " + "NA" + "BPM");
+                            latestUpdateTextView.setText("Latest update: " + "NA");
                         }
-
-                        Double value = heartrate.getValue();
-                        Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
-
-                        heartRateTextView.setText("Heartrate: " + value + "BPM");
-                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
-                    }
-                });
+                    });
     }
 
     //Dog temperature query
