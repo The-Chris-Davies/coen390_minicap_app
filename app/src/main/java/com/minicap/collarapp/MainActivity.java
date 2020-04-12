@@ -1,5 +1,7 @@
 package com.minicap.collarapp;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -200,6 +202,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Dog selected", Toast.LENGTH_SHORT).show();
                 changeDogDialogFragment dialog = new changeDogDialogFragment();
                 dialog.show(getSupportFragmentManager(), "changeDogDialogFragment");
+                return true;
+            case R.id.alertToggle:
+                toggleAlerts();
                 return true;
         }
 
@@ -499,4 +504,17 @@ public class MainActivity extends AppCompatActivity {
         mHandler.removeCallbacks(m_Runnable);
         finish();
     };
+
+    protected void toggleAlerts() {
+        Intent serviceIntent = new Intent(this, AlertService.class);
+        serviceIntent.putExtra("dogID", currDog);
+        if(AlertService.isRunning) {
+            stopService(serviceIntent);
+            Log.d(TAG, "stopService called");
+        }
+        else {
+            startService(serviceIntent);
+            Log.d(TAG, "startService called");
+        }
+    }
 }

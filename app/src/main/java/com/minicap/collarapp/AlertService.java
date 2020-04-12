@@ -34,13 +34,18 @@ public class AlertService extends Service {
     private CollectionReference mTempRef;
     private CollectionReference mExtTempRef;
 
+    public static boolean isRunning = false;
+
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate called!");
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand called!");
+
         //compare values
         //eventually, the user will set these in an activity
         final Double highExtTemp = 40.;
@@ -60,17 +65,19 @@ public class AlertService extends Service {
         mExtTempRef = mDocRef.collection("external_temperature");
 
         //create 'running in background' notification
-        Intent notificationIntent = new Intent(this, startingPage.class);
+        Intent notificationIntent = new Intent(this, SplashPage.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, "Whistle_Alert")
                 .setContentTitle("Whistle Alerts")
                 .setContentText("Running in background")
-                .setSmallIcon(R.mipmap.ic_launcher_logo)
+                .setSmallIcon(R.drawable.background_logo)
                 .setContentIntent(pendingIntent)
                 .build();
 
         //start service as foreground service
         startForeground(1, notification);
+
+        isRunning = true;
 
         //create firebase listeners
         //get internal temperature data from firebase
@@ -209,6 +216,8 @@ public class AlertService extends Service {
             }
         });
 
+        raiseTempAlert(true, true);
+
         //todo: add battery alert and watchdog for update rate
 
 
@@ -218,6 +227,8 @@ public class AlertService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy called!");
+        isRunning = false;
         super.onDestroy();
     }
 
@@ -232,12 +243,12 @@ public class AlertService extends Service {
         final String hi_lo = isHigh ? "High" : "Low";
 
         //create alert notification!
-        Intent notificationIntent = new Intent(this, startingPage.class);
+        Intent notificationIntent = new Intent(this, SplashPage.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, "Whistle_Alert")
                 .setContentTitle("Whistle Collar " + hi_lo + " " + int_ext + " Temperature Alert!")
                 .setContentText("The " + int_ext + " temperature of your dog is too " + hi_lo + " and has triggered an alert!")
-                .setSmallIcon(R.mipmap.ic_launcher_logo)
+                .setSmallIcon(R.drawable.background_logo)
                 .setContentIntent(pendingIntent)
                 .build();
 

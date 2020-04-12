@@ -7,4 +7,9 @@
         android:title="Dog"
         app:showAsAction="always|withText"
         />
+
+    <item
+        android:id="@+id/alertToggle"
+        android:title="Enable alerts"
+        app:showAsAction="never" />
 </menu>
