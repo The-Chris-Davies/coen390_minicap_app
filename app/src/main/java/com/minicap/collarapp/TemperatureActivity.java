@@ -92,7 +92,7 @@ public class TemperatureActivity extends AppCompatActivity {
         intSeries.setColor(Color.BLUE);
         intSeries.setDrawDataPoints(true);
         intSeries.setDataPointsRadius(10);
-        intSeries.setThickness(15);
+        intSeries.setThickness(10);
         intSeries.setTitle("Body Temperature °C");
         intSeries.setOnDataPointTapListener(new OnDataPointTapListener() {
             @Override
@@ -229,8 +229,8 @@ public class TemperatureActivity extends AppCompatActivity {
                 extSeries.resetData(new DataPoint[0]);
                 extSeries.setColor(Color.rgb(255,128,0));
                 extSeries.setDrawDataPoints(true);
-                extSeries.setDataPointsRadius(15);
-                extSeries.setThickness(12);
+                extSeries.setDataPointsRadius(10);
+                extSeries.setThickness(10);
                 extSeries.setTitle("External Temperature °C");
                 //extSeries.setDrawBackground(true);
                 for (int i = externalTemps.size()-1; i >= 0; i--)
@@ -288,7 +288,7 @@ public class TemperatureActivity extends AppCompatActivity {
         graph.getGridLabelRenderer().setVerticalAxisTitleTextSize(48);
 
         graph.getGridLabelRenderer().setVerticalLabelsColor(Color.BLACK);
-        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLUE);
+        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.BLACK);
 
 
         graph.getViewport().setScrollable(true);
@@ -299,8 +299,9 @@ public class TemperatureActivity extends AppCompatActivity {
 
 
         graph.getLegendRenderer().setVisible(true);
-        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.BOTTOM);
-        //graph.getLegendRenderer().setFixedPosition(20,20);
+        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+        graph.getLegendRenderer().setFixedPosition(20,20);
+        graph.getLegendRenderer().setTextSize(26);
 
         //custom label generation
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {

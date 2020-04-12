@@ -37,6 +37,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Date;
 
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 import pl.pawelkleczkowski.customgauge.CustomGauge;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,13 +51,14 @@ public class MainActivity extends AppCompatActivity {
     protected TextView latestUpdateTextView;
 
     //Guages and their texts
-    protected CustomGauge temperatureGauge1;
-    protected CustomGauge temperatureGauge2;
-    protected TextView temperatureGuage1TextView;
-    protected TextView temperatureGuage2TextView;
+    protected CustomGauge temperatureGauge1;    //External temperature gauge
+    protected CustomGauge temperatureGauge2;    //Internal temperature gauge
+    protected TextView temperatureGuage1TextView;   //External temperature value for gauge
+    protected TextView temperatureGuage2TextView;   //Interal temperature value for gauge
     protected TextView welcomeTextView;
     protected Button temperatureButton;
     protected Button heartrateButton;
+    protected PulsatorLayout heartPulsator;     //Heart pulsator icon
 
     public static final String POSITION_TIMESTAMP = "timestamp";
     public static final String POSITION_VALUE = "value";
@@ -69,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference tempRef;
     private CollectionReference heartRef;
     private CollectionReference extTempRef;
-    //private CollectionReference dogRef = db.collection("dogs");
 
     ArrayList<String> dogs;
     Boolean defFlag;
@@ -96,11 +97,13 @@ public class MainActivity extends AppCompatActivity {
         heartrateButton = findViewById(R.id.heartrateButton);
         welcomeTextView = findViewById(R.id.welcomeTextView);
 
-        //Guages and their text views
+        //Guages, pulse layouts and their text views
         temperatureGauge1 = findViewById(R.id.temperatureGauge1);
         temperatureGauge2 = findViewById(R.id.temperatureGauge2);
         temperatureGuage1TextView = findViewById(R.id.temperatureGauge1TextView);
         temperatureGuage2TextView = findViewById(R.id.temperatureGauge2TextView);
+        heartPulsator = findViewById(R.id.heartPulsator);
+        heartPulsator.start();
 
         //Initialize position, heartrate and temperature objects
         position = new Position();
@@ -111,9 +114,6 @@ public class MainActivity extends AppCompatActivity {
         currDog = new String();
         dogs = new ArrayList<>();
         defFlag = false;
-
-        //Connect to database and give toast
-        //Toast.makeText(MainActivity.this, "Firebase Connection Good", Toast.LENGTH_LONG).show();
 
         //Clickable text view to switch to activities
         temperatureActivityIntent(temperatureButton);
@@ -388,6 +388,8 @@ public class MainActivity extends AppCompatActivity {
 
                             heartRateTextView.setText("Heartrate: " + value + "BPM");
                             latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+                            heartPulsator.setCount(3);
+                            heartPulsator.setDuration((int) Math.round(value / 5));
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -433,8 +435,8 @@ public class MainActivity extends AppCompatActivity {
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
 
                         //Add new value to gauge
-                        temperatureGauge1.setValue((int)Math.round(value));
-                        temperatureGuage1TextView.setText(value + "°C");
+                        temperatureGauge2.setValue((int)Math.round(value));
+                        temperatureGuage2TextView.setText(value + "°C");
                     }
                 });
     }
@@ -473,8 +475,8 @@ public class MainActivity extends AppCompatActivity {
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
 
                         //Add new value to gauge
-                        temperatureGauge2.setValue((int)Math.round(value));
-                        temperatureGuage2TextView.setText(value + "°C");
+                        temperatureGauge1.setValue((int)Math.round(value));
+                        temperatureGuage1TextView.setText(value + "°C");
                     }
                 });
     }
