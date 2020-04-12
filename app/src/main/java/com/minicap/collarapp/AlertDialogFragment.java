@@ -43,8 +43,6 @@ public class AlertDialogFragment extends DialogFragment {
         extTempHighTime = view.findViewById(R.id.extTempHighTime);
         extTempLowVal = view.findViewById(R.id.extTempLowVal);
         extTempLowTime = view.findViewById(R.id.extTempLowTime);
-        battAlertVal = view.findViewById(R.id.battAlertVal);
-        watchdogAlertVal = view.findViewById(R.id.watchdogAlertVal);
 
         alertEnable = view.findViewById(R.id.alertEnable);
 
