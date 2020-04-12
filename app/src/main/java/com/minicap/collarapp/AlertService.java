@@ -46,17 +46,22 @@ public class AlertService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand called!");
 
+        SharedPreferenceHelper sph = new SharedPreferenceHelper(this);
+        
         //compare values
         //eventually, the user will set these in an activity
-        final Double highExtTemp = 40.;
-        final Double highExtTime = 5.;
-        final Double lowExtTemp = -10.;
-        final Double lowExtTime = 5.;
+        final Double highIntTemp = sph.getIntTempHighVal();
+        final Double highIntTime = sph.getIntTempHighTime();
+        final Double lowIntTemp = sph.getIntTempLowVal();
+        final Double lowIntTime = sph.getIntTempLowTime();
 
-        final Double highIntTemp = 40.;
-        final Double highIntTime = 5.;
-        final Double lowIntTemp = 30.;
-        final Double lowIntTime = 5.;
+        final Double highExtTemp = sph.getExtTempHighVal();
+        final Double highExtTime = sph.getExtTempHighTime();
+        final Double lowExtTemp = sph.getExtTempLowVal();
+        final Double lowExtTime = sph.getExtTempLowTime();
+        
+        final Double battAlertVal = sph.getBattAlertVal();
+        final Double watchdogAlertVal = sph.getWatchdogAlertVal();
 
 
         //init firebase collections
@@ -225,7 +230,6 @@ public class AlertService extends Service {
         });
 
         //todo: add battery alert and watchdog for update rate
-
 
         //redeliver intent - when the service is closed, restart it with the same intent
         return START_REDELIVER_INTENT;
