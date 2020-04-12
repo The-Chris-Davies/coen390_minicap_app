@@ -4,10 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -135,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
                 for (String dog : dogs) {
                     Log.i(TAG, dog);
                 }
-
                 if (defFlag == false) {
                     //Set dog default path
                     //set default UI
@@ -174,19 +177,40 @@ public class MainActivity extends AppCompatActivity {
 
     //Todo: Create method to update whole UI, pass dog key as argument
 
+
+    //Select item from menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.dog_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.item1:
+                Toast.makeText(this, "Dog selected", Toast.LENGTH_SHORT);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     //On phone back button pressed return to MainActivity
     @Override
     public void onBackPressed() {
-        Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(returnMain);
+        //Intent returnMain = new Intent(getApplicationContext(), MainActivity.class);
+        //startActivity(returnMain);
         finish();
     }
 
+    //Resume program after pause
     @Override
     protected void onResume() {
         super.onResume();
     }
 
+    //Change to temperature activity
     public void temperatureActivityIntent(TextView temperatureTextView) {
         temperatureTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Change to heartrate activity
     public void heartRateActivityIntent(TextView heartRateTextView) {
         heartRateTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Change to position activity
     public void positionActivityIntent(TextView locationTextView) {
         locationTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    //Change position if value changed in db NOT NEEDED ANYMORE
     public void updateChangedPositionDocument() {
         //Todo: Make an on event listener for updates on a specific dog
         String positionDocument = "dogs/HpwWiJSGHNbOgJtYi2jM/position/" + position.getDocumentID();
@@ -277,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //Dog heartrate
+    //Dog heartrate query
     public void queryLatestHeartrateDocument() {
         Task<QuerySnapshot> heartQuery = heartRef
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -313,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    //Dog temperature
+    //Dog temperature query
     public void queryLatestDogTemperatureDocument() {
         Task<QuerySnapshot> dogTempQuery = tempRef
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -345,13 +372,15 @@ public class MainActivity extends AppCompatActivity {
 
                         //temperatureTextView.setText("Body Temperature: " + value + "°C");
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+
+                        //Add new value to gauge
                         temperatureGauge1.setValue((int)Math.round(value));
                         temperatureGuage1TextView.setText(value + "°C");
                     }
                 });
     }
 
-    //External temperature
+    //External temperature query
     public void queryLatestExternalTemperatureDocument() {
         Task<QuerySnapshot> dogTempQuery = extTempRef
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -383,6 +412,8 @@ public class MainActivity extends AppCompatActivity {
 
                         //temperatureExternalTextView.setText("Environmental Temperature: " + value + "°C");
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
+
+                        //Add new value to gauge
                         temperatureGauge2.setValue((int)Math.round(value));
                         temperatureGuage2TextView.setText(value + "°C");
                     }
@@ -393,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable m_Runnable = new Runnable() {
         public void run()
         {
-            Toast.makeText(MainActivity.this,"in runnable",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this,"Refresh",Toast.LENGTH_SHORT).show();
             //Position
             queryLatestPositionDocument();  //Find latest document
             updateChangedPositionDocument();    //Update text with document data that was changed
