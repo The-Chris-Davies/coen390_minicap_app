@@ -206,6 +206,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.alertToggle:
                 toggleAlerts(findViewById(R.id.alertToggle));
                 return true;
+            case R.id.alertSettings:
+                AlertDialogFragment alertDialog = new AlertDialogFragment();
+                alertDialog.show(getSupportFragmentManager(), "alertDialogFragment");
         }
 
         return super.onOptionsItemSelected(item);

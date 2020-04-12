@@ -8,36 +8,62 @@ public class SharedPreferenceHelper {
     private SharedPreferences sharedPreferences;
 
     public SharedPreferenceHelper(Context context) {
-        sharedPreferences = context.getSharedPreferences("ProfilePreference", Context.MODE_PRIVATE );
+        sharedPreferences = context.getSharedPreferences("AlertPreferences", Context.MODE_PRIVATE );
     }
 
-    public void saveProfileName(String name){
+    public void saveAlertSettings(Double intTempHighVal, Double intTempHighTime, Double intTempLowVal, Double intTempLowTime, Double extTempHighVal, Double extTempHighTime, Double extTempLowVal, Double extTempLowTime, Double battAlertVal, Double watchdogAlertVal) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("name",name );
-        editor.commit();
+        editor.putString("intTempHighVal",intTempHighVal.toString());
+        editor.putString("intTempHighTime",intTempHighTime.toString());
+        editor.putString("intTempLowVal",intTempLowVal.toString());
+        editor.putString("intTempLowTime",intTempLowTime.toString());
+        editor.putString("extTempHighVal",extTempHighVal.toString());
+        editor.putString("extTempHighTime",extTempHighTime.toString());
+        editor.putString("extTempLowVal",extTempLowVal.toString());
+        editor.putString("extTempLowTime",extTempLowTime.toString());
+        editor.putString("battAlertVal",battAlertVal.toString());
+        editor.putString("watchdogAlertVal",watchdogAlertVal.toString());
+
+        editor.apply();
     }
 
-    public void saveProfileAge(int age){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("age", age);
-        editor.commit();
+    public Double getIntTempHighVal() {
+        return Double.parseDouble(sharedPreferences.getString("intTempHighVal", "42"));
     }
 
-    public void saveProfileID(String id){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("id", id);
-        editor.commit();
+    public Double getIntTempHighTime() {
+        return Double.parseDouble(sharedPreferences.getString("intTempHighTime", "5"));
     }
 
-    public String getProfileName() {
-        return sharedPreferences.getString("name", "");
+    public Double getIntTempLowVal() {
+        return Double.parseDouble(sharedPreferences.getString("intTempLowVal", "32"));
     }
 
-    public int getProfileAge() {
-        return sharedPreferences.getInt("age", 0);
+    public Double getIntTempLowTime() {
+        return Double.parseDouble(sharedPreferences.getString("intTempLowTime", "5"));
     }
 
-    public String getProfileID() {
-        return sharedPreferences.getString("id", "");
+    public Double getExtTempHighVal() {
+        return Double.parseDouble(sharedPreferences.getString("extTempHighVal", "32"));
+    }
+
+    public Double getExtTempHighTime() {
+        return Double.parseDouble(sharedPreferences.getString("extTempHighTime", "45"));
+    }
+
+    public Double getExtTempLowVal() {
+        return Double.parseDouble(sharedPreferences.getString("extTempLowVal", "-20"));
+    }
+
+    public Double getExtTempLowTime() {
+        return Double.parseDouble(sharedPreferences.getString("extTempLowTime", "45"));
+    }
+
+    public Double getBattAlertVal() {
+        return Double.parseDouble(sharedPreferences.getString("battAlertVal", "15"));
+    }
+
+    public Double getWatchdogAlertVal() {
+        return Double.parseDouble(sharedPreferences.getString("watchdogAlertVal", "15"));
     }
 }
