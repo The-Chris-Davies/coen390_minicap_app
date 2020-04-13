@@ -173,7 +173,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/temperatureGauge2"
         app:layout_constraintEnd_toEndOf="@+id/temperatureGauge2"
-        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintHorizontal_bias="0.985"
         app:layout_constraintStart_toStartOf="@+id/temperatureGauge2"
         app:layout_constraintTop_toTopOf="@+id/temperatureGauge2"
         app:layout_constraintVertical_bias="0.464" />
@@ -239,12 +239,9 @@
         app:layout_constraintVertical_bias="0.023"
         app:pulse_color="@color/colorAccent"
         app:pulse_count="4"
-        app:pulse_duration="7000"
-        app:pulse_interpolator="Linear"
+        app:pulse_interpolator="Decelerate"
         app:pulse_repeat="0"
-
         app:pulse_startFromScratch="false">
-
     </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
     <ImageView

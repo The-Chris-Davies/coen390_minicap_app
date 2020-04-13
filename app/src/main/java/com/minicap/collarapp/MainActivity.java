@@ -103,7 +103,11 @@ public class MainActivity extends AppCompatActivity {
         temperatureGuage1TextView = findViewById(R.id.temperatureGauge1TextView);
         temperatureGuage2TextView = findViewById(R.id.temperatureGauge2TextView);
         heartPulsator = findViewById(R.id.heartPulsator);
+
+        //Heart pulsator view
         heartPulsator.start();
+        heartPulsator.setCount(4);
+        heartPulsator.setDuration(7000);
 
         //Initialize position, heartrate and temperature objects
         position = new Position();
@@ -388,14 +392,17 @@ public class MainActivity extends AppCompatActivity {
 
                             heartRateTextView.setText("Heartrate: " + value + "BPM");
                             latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
-                            heartPulsator.setCount(3);
-                            heartPulsator.setDuration((int) Math.round(value / 5));
+
+                            //Set heartbeat speed and count
+                            heartPulsator.setCount(2);
+                            heartPulsator.setDuration((int) Math.round(value * 20));
+                            heartPulsator.start();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            heartRateTextView.setText("Heartrate: " + "NA" + "BPM");
+                            heartRateTextView.setText("Heartrate: " + "NA");
                             latestUpdateTextView.setText("Latest update: " + "NA");
                         }
                     });
