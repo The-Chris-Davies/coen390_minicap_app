@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            //todo: create entry in firestore at /users/{userID} when account is created
                             goToSplashPage();
                         } else {
                             // If sign in fails, display a message to the user.
