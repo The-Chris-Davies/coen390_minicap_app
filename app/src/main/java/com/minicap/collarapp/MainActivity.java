@@ -130,15 +130,6 @@ public class MainActivity extends AppCompatActivity {
         heartRateActivityIntent(heartrateButton);
         positionActivityIntent(positionImageView);
 
-        //Todo: Create button for temperature, heartrate and position
-        //Todo: create registration fragment
-        //Todo: new path: UserID/user(1,2,3...)/dog/dog(1,2,3...)/position"
-        //Todo: new path: UserID/dog1/position"
-        //Todo: On Create initialize dog's ID and use it when referencing other collections (temp, heart, pos, etc.)
-        //Todo: Use USER'S dog document instead of HpwWiJSGHNbOgJtYi2jM
-
-        //Todo: Set NULL conditions for dogs and queries (so no crashing occurs)
-
         //Pass arguments from splash page to main activity -> generate dog path
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -152,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
                                     String name = document.getString("name");
-//                                    welcomeTextView.setText("elcome: " + name);
+                                    setTitle(name + "'s Overview");
                                     Log.d(TAG, "Document found");
                                 }
                                 else {
@@ -193,9 +184,6 @@ public class MainActivity extends AppCompatActivity {
         //External temperature
         queryLatestExternalTemperatureDocument();
     }
-
-    //Todo: Create method to update whole UI, pass dog key as argument
-
 
     //Select item from menu
     @Override
@@ -510,7 +498,6 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable m_Runnable = new Runnable() {
         public void run()
         {
-            Toast.makeText(MainActivity.this,"Refresh",Toast.LENGTH_SHORT).show();
             //Position
             queryLatestPositionDocument();  //Find latest document
             updateChangedPositionDocument();    //Update text with document data that was changed

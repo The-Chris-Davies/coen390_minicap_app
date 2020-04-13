@@ -20,8 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LoginActivity"
-            android:screenOrientation="portrait" ></activity>
-        <activity android:name=".alertActivity" />
+            android:label="Log In"
+            android:screenOrientation="portrait" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -38,7 +38,8 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".SplashPage"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:label="Select a dog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,13 +48,15 @@
         </activity>
         <activity
             android:name=".PositionActivity"
-            android:label="@string/title_activity_maps"
+            android:label="Position Tracker"
             android:screenOrientation="portrait"/>
         <activity android:name=".TemperatureActivity"
+            android:label="Temperature Monitor"
             android:screenOrientation="portrait"/>
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".HeartrateActivity"
+            android:label="Heartrate Monitor"
             android:screenOrientation="portrait"/>
 
         <service android:name=".AlertService" />
