@@ -42,7 +42,7 @@ public class changeDogDialogFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.fragment_change_dog, container, false);
         dogList = view.findViewById(R.id.dogList);
-        dogLayoutManager = new LinearLayoutManager(getActivity());         //Here i use getActivity()
+        dogLayoutManager = new LinearLayoutManager(getContext());         //Here i use getActivity()
 
         setupUI();
         return view;
@@ -69,13 +69,13 @@ public class changeDogDialogFragment extends DialogFragment {
 
                 //if no positions available, continue
                 if (dogs.isEmpty()) {
-                    Toast.makeText(getActivity(), "Please activate a collar", Toast.LENGTH_LONG).show();        //Here i use getActivity()
+                    Toast.makeText(getContext(), "Please activate a collar", Toast.LENGTH_LONG).show();        //Here i use getActivity()
                     Log.i(TAG, "No collars detected for this account");
                     return;
                 }
 
                 //add the dogs to the arrayList
-                dogAdapter = new DogListAdapter(getActivity(), dogs);        //getContext() needs to be swapped for getActivity(), but issues still arise
+                dogAdapter = new DogListAdapter(getContext(), dogs);        //getContext() needs to be swapped for getActivity(), but issues still arise
                 dogList.setAdapter(dogAdapter);
                 dogList.setLayoutManager(dogLayoutManager);
                 dogList.getAdapter().notifyDataSetChanged();   //probably not necessary

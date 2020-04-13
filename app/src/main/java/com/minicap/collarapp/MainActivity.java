@@ -3,6 +3,7 @@ package com.minicap.collarapp;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     protected TextView locationTextView;
     protected TextView temperatureExternalTextView;
     protected TextView latestUpdateTextView;
+    protected ImageView positionImageView;
 
     //Guages and their texts
     protected CustomGauge temperatureGauge1;    //External temperature gauge
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     protected TextView welcomeTextView;
     protected Button temperatureButton;
     protected Button heartrateButton;
+//    protected Button positionButton;
     protected PulsatorLayout heartPulsator;     //Heart pulsator icon
 
     public static final String POSITION_TIMESTAMP = "timestamp";
@@ -95,7 +99,9 @@ public class MainActivity extends AppCompatActivity {
         temperatureExternalTextView = findViewById(R.id.temperatureExternalTextView);
         temperatureButton = findViewById(R.id.temperatureButton);
         heartrateButton = findViewById(R.id.heartrateButton);
-        welcomeTextView = findViewById(R.id.welcomeTextView);
+//        welcomeTextView = findViewById(R.id.welcomeTextView);
+        positionImageView = findViewById(R.id.positionImageView);
+//        positionButton = findViewById(R.id.positionButton);
 
         //Guages, pulse layouts and their text views
         temperatureGauge1 = findViewById(R.id.temperatureGauge1);
@@ -106,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Heart pulsator view
         heartPulsator.start();
-        heartPulsator.setCount(4);
+        heartPulsator.setCount(5);
         heartPulsator.setDuration(7000);
 
         //Initialize position, heartrate and temperature objects
@@ -122,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         //Clickable text view to switch to activities
         temperatureActivityIntent(temperatureButton);
         heartRateActivityIntent(heartrateButton);
-        positionActivityIntent(locationTextView);
+        positionActivityIntent(positionImageView);
 
         //Todo: Create button for temperature, heartrate and position
         //Todo: create registration fragment
@@ -146,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
                                     String name = document.getString("name");
-                                    welcomeTextView.setText("elcome: " + name);
+//                                    welcomeTextView.setText("elcome: " + name);
                                     Log.d(TAG, "Document found");
                                 }
                                 else {
@@ -255,8 +261,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Change to position activity
-    public void positionActivityIntent(TextView locationTextView) {
-        locationTextView.setOnClickListener(new View.OnClickListener() {
+    public void positionActivityIntent(ImageView positionImageView) {
+        positionImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PositionActivity.class);
@@ -291,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                         String ID = position.getDocumentID();
                         Log.i(TAG, "time: " + timestamp.toString() + " " + value.toString() + " " + ID);
 
-                        locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
+                        //locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
                     }
                 });
@@ -398,8 +404,8 @@ public class MainActivity extends AppCompatActivity {
                             latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
 
                             //Set heartbeat speed and count
-                            heartPulsator.setCount(2);
-                            heartPulsator.setDuration((int) Math.round(value * 20));
+                            heartPulsator.setCount(5);
+                            heartPulsator.setDuration((int) Math.round(value * 15));
                             heartPulsator.start();
                         }
                     })
