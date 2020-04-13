@@ -369,6 +369,10 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                            //if no data is available, just exit
+                            if(queryDocumentSnapshots.isEmpty()) return;
+
                             DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
                                     .get(queryDocumentSnapshots.size() - 1);
 
@@ -417,6 +421,10 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        //if no data is available, just exit
+                        if(queryDocumentSnapshots.isEmpty()) return;
+
                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);
 
@@ -457,6 +465,10 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        //if no data is available, just exit
+                        if(queryDocumentSnapshots.isEmpty()) return;
+
                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);
 
