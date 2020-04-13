@@ -258,6 +258,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        locationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
+                intent.putExtra("dogID", currDog);
+                startActivity(intent);
+            }
+        });
     }
 
     //Dog position
@@ -286,7 +294,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.i(TAG, "time: " + timestamp.toString() + " " + value.toString() + " " + ID);
 
                         //locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
-                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
                     }
                 });
     }
