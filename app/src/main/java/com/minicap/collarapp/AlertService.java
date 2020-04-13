@@ -260,7 +260,8 @@ public class AlertService extends Service {
                 .setContentTitle("Whistle Collar " + hi_lo + " " + int_ext + " Temperature Alert!")
                 .setContentText("The " + int_ext + " temperature of your dog is too " + hi_lo + "!")
                 .setSmallIcon(R.drawable.background_logo)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setVibrate(new long[]{100,200,200,100,100,200,200,100})
                 .setContentIntent(pendingIntent)
                 .build();
 
