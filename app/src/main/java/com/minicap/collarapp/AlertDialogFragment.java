@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class AlertDialogFragment extends DialogFragment {
 
@@ -56,8 +57,6 @@ public class AlertDialogFragment extends DialogFragment {
         extTempHighTime.setText(sph.getExtTempHighTime().toString());
         extTempLowVal.setText(sph.getExtTempLowVal().toString());
         extTempLowTime.setText(sph.getExtTempLowTime().toString());
-        battAlertVal.setText(sph.getBattAlertVal().toString());
-        watchdogAlertVal.setText(sph.getWatchdogAlertVal().toString());
 
         alertEnable.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +69,11 @@ public class AlertDialogFragment extends DialogFragment {
     }
 
     private void enableAlerts() {
+        //if any entry is null
+        if (intTempHighVal.getText().toString().isEmpty() || intTempHighTime.getText().toString().isEmpty() || intTempLowVal.getText().toString().isEmpty() || intTempLowTime.getText().toString().isEmpty() || extTempHighVal.getText().toString().isEmpty() || extTempHighTime.getText().toString().isEmpty() || extTempLowVal.getText().toString().isEmpty() || extTempLowTime.getText().toString().isEmpty() || battAlertVal.getText().toString().isEmpty() || watchdogAlertVal.getText().toString().isEmpty()) {
+            Toast.makeText(getContext(), "Invalid alert options", Toast.LENGTH_SHORT).show();
+            return;
+        }
         sph.saveAlertSettings(Double.parseDouble(intTempHighVal.getText().toString()), Double.parseDouble(intTempHighTime.getText().toString()), Double.parseDouble(intTempLowVal.getText().toString()), Double.parseDouble(intTempLowTime.getText().toString()), Double.parseDouble(extTempHighVal.getText().toString()), Double.parseDouble(extTempHighTime.getText().toString()), Double.parseDouble(extTempLowVal.getText().toString()), Double.parseDouble(extTempLowTime.getText().toString()), Double.parseDouble(battAlertVal.getText().toString()), Double.parseDouble(watchdogAlertVal.getText().toString()));
     }
 }
