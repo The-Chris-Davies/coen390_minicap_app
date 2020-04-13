@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,6 +44,12 @@ public class SplashPage extends AppCompatActivity {
 
     protected void setupUI()
     {
+        //if no user is signed in, go to sign in page
+        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Intent intent = new Intent(SplashPage.this, LoginActivity.class);
+            startActivity(intent);
+        }
+
         dogList = findViewById(R.id.dogList);
         dogLayoutManager = new LinearLayoutManager(this);
 
