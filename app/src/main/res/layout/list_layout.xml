@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:fontFamily="@font/abeezee"
-        android:text="value" />
+        android:text="value"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/timestamp"
@@ -19,5 +20,6 @@
         android:layout_weight="1"
         android:fontFamily="@font/abeezee"
         android:gravity="right"
-        android:text="timestamp" />
+        android:text="timestamp"
+        android:textSize="20sp" />
 </LinearLayout>
