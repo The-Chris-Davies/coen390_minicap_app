@@ -15,6 +15,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String TAG = "LoginActivity";
@@ -39,17 +41,13 @@ public class LoginActivity extends AppCompatActivity {
             goToSplashPage();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
-    }
-
     public void createAccount(View v) {
         String email = loginEmail.getText().toString();
         String password = loginEmail.getText().toString();
+        if(email.isEmpty() || password.isEmpty()) {
+            failMessage();
+            return;
+        }
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -58,14 +56,12 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //todo: create entry in firestore at /users/{userID} when account is created
+                            //entry in firestore at /users/{userID} is created when the user adds their first dog
                             goToSplashPage();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            failMessage();
                         }
                     }
                 });
@@ -74,6 +70,10 @@ public class LoginActivity extends AppCompatActivity {
     public void signIn(View V) {
         String email = loginEmail.getText().toString();
         String password = loginEmail.getText().toString();
+        if(email.isEmpty() || password.isEmpty()) {
+            failMessage();
+            return;
+        }
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -86,14 +86,15 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            failMessage();
                         }
-
-                        // ...
                     }
                 });
+    }
+
+    private void failMessage() {
+        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                Toast.LENGTH_SHORT).show();
     }
 
     private void goToSplashPage() {

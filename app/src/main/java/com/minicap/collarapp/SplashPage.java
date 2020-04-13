@@ -1,5 +1,6 @@
 package com.minicap.collarapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,9 +12,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -25,7 +29,9 @@ import java.util.ArrayList;
 public class SplashPage extends AppCompatActivity {
     private final String TAG = "StartingPage";
 
+    private CollectionReference mUserDogRef;
     private CollectionReference mDogRef = FirebaseFirestore.getInstance().collection("dogs");
+    FirebaseUser user;
 
     private RecyclerView dogList;
     private RecyclerView.Adapter dogAdapter;
@@ -38,6 +44,14 @@ public class SplashPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starting_page);
 
+        //if no user is signed in, go to sign in page
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user == null) {
+            Intent intent = new Intent(SplashPage.this, LoginActivity.class);
+            startActivity(intent);
+            return;
+        }
+
         setupUI();
     }
 
@@ -45,14 +59,25 @@ public class SplashPage extends AppCompatActivity {
 
     protected void setupUI()
     {
-        //if no user is signed in, go to sign in page
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Intent intent = new Intent(SplashPage.this, LoginActivity.class);
-            startActivity(intent);
-        }
-
         dogList = findViewById(R.id.dogList);
         dogLayoutManager = new LinearLayoutManager(this);
+
+        mUserDogRef = FirebaseFirestore.getInstance().collection("users/" + user.getUid() + "/allowedDogs");
+        final ArrayList<String> allowedDogs = new ArrayList();
+        mUserDogRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "got user dogs: ");
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        allowedDogs.add((String) document.getData().get("ref"));
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
 
         mDogRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
