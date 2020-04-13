@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -189,16 +190,20 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
             //clear the map's markers and lines
             mMap.clear();
 
-            //create markers on map
-            for(Position pos : positions) {
+            //create markers on map (iterate backwards so most recent is drawn first)
+            for(int i = positions.size()-1; i >= 0; i--) {
+                Position pos = positions.get(i);
                 Double latitudeGet = pos.getValue().getLatitude();
                 Double longitudeGet = pos.getValue().getLongitude();
                 LatLng dogPos = new LatLng(latitudeGet, longitudeGet);
-                //todo: set the marker image differently for most recent and other points.
-                mMap.addMarker(new MarkerOptions().title(DateFormat.getTimeInstance().format(pos.getTimestamp().toDate())).position(dogPos)).setTag(pos);
-                //zoom to most recent position
-                if(pos == positions.get(0))
+                //draw a different marker for the most recent position
+                if(pos == positions.get(0)) {
+                    mMap.addMarker(new MarkerOptions().title("most recent").position(dogPos).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_fresh_small)).anchor(0.5f,0.5f).zIndex(1.0f)).setTag(pos);
+                    //zoom to most recent position
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(dogPos, 14.0f));
+                }
+                else
+                    mMap.addMarker(new MarkerOptions().position(dogPos).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker_stale_small)).anchor(0.5f,0.5f)).setTag(pos);
             }
 
             //draw lines between previous data points
@@ -207,12 +212,12 @@ public class PositionActivity extends AppCompatActivity implements OnMapReadyCal
                 for(int i = 0; i < positions.size(); i++) {
                     //if timestamp difference is over 15 minutes, disconnect the line
                     if(i >= 1 && (positions.get(i).getTimestamp().getSeconds() + 60*15 < positions.get(i-1).getTimestamp().getSeconds())) {
-                        mMap.addPolyline(new PolylineOptions().color(Color.RED).jointType(1)).setPoints(linePts);
+                        mMap.addPolyline(new PolylineOptions().color(Color.rgb(255,128,0)).jointType(1).width(20)).setPoints(linePts);
                         linePts = new ArrayList();
                     }
                     linePts.add(new LatLng(positions.get(i).getValue().getLatitude(), positions.get(i).getValue().getLongitude()));
                 }
-                mMap.addPolyline(new PolylineOptions().color(Color.RED)).setPoints(linePts);
+                mMap.addPolyline(new PolylineOptions().color(Color.rgb(255,128,0)).jointType(1).width(20)).setPoints(linePts);
             }
             }
         });

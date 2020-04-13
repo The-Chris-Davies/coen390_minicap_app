@@ -86,6 +86,7 @@ public class HeartrateActivity extends AppCompatActivity {
         series = new LineGraphSeries<DataPoint>();
         series.setColor(Color.rgb(255,128,0));
         series.setDrawDataPoints(true);
+        series.setThickness(10);
         series.setTitle("heartrate");
 
         series.setOnDataPointTapListener(new OnDataPointTapListener() {
