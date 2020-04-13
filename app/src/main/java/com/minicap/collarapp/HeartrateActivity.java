@@ -205,6 +205,7 @@ public class HeartrateActivity extends AppCompatActivity {
         graph.getLegendRenderer().setVisible(true);
         graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
         graph.getLegendRenderer().setFixedPosition(20,20);
+        graph.getLegendRenderer().setTextSize(26);
 
         //custom label generation
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
