@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -259,6 +260,7 @@ public class AlertService extends Service {
                 .setContentTitle("Whistle Collar " + hi_lo + " " + int_ext + " Temperature Alert!")
                 .setContentText("The " + int_ext + " temperature of your dog is too " + hi_lo + "!")
                 .setSmallIcon(R.drawable.background_logo)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
                 .setContentIntent(pendingIntent)
                 .build();
 
