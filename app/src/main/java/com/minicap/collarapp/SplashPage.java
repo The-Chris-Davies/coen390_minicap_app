@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -83,5 +84,11 @@ public class SplashPage extends AppCompatActivity {
                 dogList.getAdapter().notifyDataSetChanged();   //probably not necessary
             }
         });
+    }
+    public void signOut(View view) {
+        //sign user out and go to signin activity
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(SplashPage.this, LoginActivity.class);
+        startActivity(intent);
     }
 }

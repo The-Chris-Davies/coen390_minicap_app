@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait" ></activity>
         <activity android:name=".alertActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -36,7 +37,8 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".SplashPage">
+        <activity android:name=".SplashPage"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,10 +47,14 @@
         </activity>
         <activity
             android:name=".PositionActivity"
-            android:label="@string/title_activity_maps" />
-        <activity android:name=".TemperatureActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".HeartrateActivity" />
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TemperatureActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".HeartrateActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".AlertService" />
     </application>
