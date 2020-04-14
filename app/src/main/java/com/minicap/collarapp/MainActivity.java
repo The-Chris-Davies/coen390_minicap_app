@@ -275,8 +275,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         if(queryDocumentSnapshots.size() < 1) {
                             //if no data is returned, raise a toast and continue
-                            Toast.makeText(MainActivity.this, "No location data currently available", Toast.LENGTH_LONG).show();
-                            Log.i(TAG, "No location data available for tracking feature");
+                            Toast.makeText(MainActivity.this, "No data currently available", Toast.LENGTH_LONG).show();
+                            Log.i(TAG, "No data available for tracking feature");
                             return;
                         }
 
