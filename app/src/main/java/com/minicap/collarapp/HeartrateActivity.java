@@ -84,8 +84,9 @@ public class HeartrateActivity extends AppCompatActivity {
         mHRRef = db.collection("dogs/" + currDog + "/heartrate");
 
         series = new LineGraphSeries<DataPoint>();
-        series.setColor(Color.RED);
+        series.setColor(Color.rgb(255,128,0));
         series.setDrawDataPoints(true);
+        series.setThickness(10);
         series.setTitle("heartrate");
 
         series.setOnDataPointTapListener(new OnDataPointTapListener() {

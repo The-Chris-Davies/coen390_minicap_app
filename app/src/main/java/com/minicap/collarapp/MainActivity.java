@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
                                     String name = document.getString("name");
-//                                    welcomeTextView.setText("elcome: " + name);
+                                    setTitle(name + "'s Overview");
                                     Log.d(TAG, "Document found");
                                 }
                                 else {
@@ -180,9 +180,6 @@ public class MainActivity extends AppCompatActivity {
         //External temperature
         queryLatestExternalTemperatureDocument();
     }
-
-    //Todo: Create method to update whole UI, pass dog key as argument
-
 
     //Select item from menu
     @Override
@@ -257,6 +254,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        locationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
+                intent.putExtra("dogID", currDog);
+                startActivity(intent);
+            }
+        });
     }
 
     //Dog position
@@ -285,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.i(TAG, "time: " + timestamp.toString() + " " + value.toString() + " " + ID);
 
                         //locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
-                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -488,7 +492,6 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable m_Runnable = new Runnable() {
         public void run()
         {
-            Toast.makeText(MainActivity.this,"Refresh",Toast.LENGTH_SHORT).show();
             //Position
             queryLatestPositionDocument();  //Find latest document
             updateChangedPositionDocument();    //Update text with document data that was changed
