@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SplashScreen"
+    android:background="#FFFFFF">
+
+
+    <pl.bclogic.pulsator4droid.library.PulsatorLayout
+        android:id="@+id/pulsatorLogo1"
+        android:layout_width="179dp"
+        android:layout_height="138dp"
+        android:background="@drawable/splashimage1"
+        android:foreground="@drawable/splashimage1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.373"
+        app:pulse_color="#E33E7A"
+        app:pulse_count="4"
+        app:pulse_duration="5000"
+        app:pulse_interpolator="Linear"
+        app:pulse_repeat="0"
+        app:pulse_startFromScratch="false"></pl.bclogic.pulsator4droid.library.PulsatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
