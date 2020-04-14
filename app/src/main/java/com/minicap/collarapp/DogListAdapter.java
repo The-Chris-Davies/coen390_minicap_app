@@ -39,6 +39,7 @@ public class DogListAdapter extends RecyclerView.Adapter<DogListAdapter.ViewHold
                     int selected = getAdapterPosition();
                     Intent intent = new Intent(context, MainActivity.class);
                     intent.putExtra("dogID", dogs.get(selected).getId());
+                    Toast.makeText(context, "Dog selected", Toast.LENGTH_SHORT).show();
                     context.startActivity(intent);
                 }
             });

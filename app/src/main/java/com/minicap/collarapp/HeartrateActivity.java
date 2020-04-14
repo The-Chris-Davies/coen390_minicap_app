@@ -87,7 +87,7 @@ public class HeartrateActivity extends AppCompatActivity {
         series.setColor(Color.rgb(255,128,0));
         series.setDrawDataPoints(true);
         series.setThickness(10);
-        series.setTitle("heartrate");
+        series.setTitle("Heartrate BPM");
 
         series.setOnDataPointTapListener(new OnDataPointTapListener() {
             @Override

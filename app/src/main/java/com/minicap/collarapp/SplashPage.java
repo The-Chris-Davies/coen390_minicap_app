@@ -94,7 +94,6 @@ public class SplashPage extends AppCompatActivity {
         dogLayoutManager = new LinearLayoutManager(this);
 
         mUserDogRef = FirebaseFirestore.getInstance().collection("users/" + user.getUid() + "/allowedDogs");
-
         mUserDogRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

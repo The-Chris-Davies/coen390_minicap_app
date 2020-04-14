@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     protected TextView temperatureGuage2TextView;   //Interal temperature value for gauge
     protected Button temperatureButton;
     protected Button heartrateButton;
+    protected Button positionButton;
     protected PulsatorLayout heartPulsator;     //Heart pulsator icon
 
     public static final String POSITION_TIMESTAMP = "timestamp";
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         temperatureButton = findViewById(R.id.temperatureButton);
         heartrateButton = findViewById(R.id.heartrateButton);
         positionImageView = findViewById(R.id.positionImageView);
+        positionButton = findViewById(R.id.positionButton);
 
         //Guages, pulse layouts and their text views
         temperatureGauge1 = findViewById(R.id.temperatureGauge1);
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         //Heart pulsator view
         heartPulsator.start();
         heartPulsator.setCount(5);
-        heartPulsator.setDuration(7000);
+        heartPulsator.setDuration(5000);
 
         //Initialize position, heartrate and temperature objects
         position = new Position();
@@ -122,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
         defFlag = false;
 
         //Clickable text view to switch to activities
-        temperatureActivityIntent(temperatureButton);
-        heartRateActivityIntent(heartrateButton);
-        positionActivityIntent(positionImageView);
+        temperatureActivityIntent();
+        heartRateActivityIntent();
+        positionActivityIntent();
 
         //Pass arguments from splash page to main activity -> generate dog path
         Bundle bundle = getIntent().getExtras();
@@ -151,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
-            Toast.makeText(this, "Dog selected", Toast.LENGTH_SHORT).show();
         }
 
         posRef = db.collection("dogs/" + currDog + "/position");
@@ -189,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //Select from dropdown menu
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId()) {
@@ -197,14 +199,18 @@ public class MainActivity extends AppCompatActivity {
                 changeDogDialogFragment dialog = new changeDogDialogFragment();
                 dialog.show(getSupportFragmentManager(), "changeDogDialogFragment");
                 return true;
+            case R.id.addDog:
+                addDogDialogFragmentMainActivity dialogAddDog = new addDogDialogFragmentMainActivity();
+                dialogAddDog.show(getSupportFragmentManager(), "addDogDialogFragmentMainActivity");
+                return true;
             case R.id.alertToggle:
                 toggleAlerts(findViewById(R.id.alertToggle));
                 return true;
             case R.id.alertSettings:
                 AlertDialogFragment alertDialog = new AlertDialogFragment();
                 alertDialog.show(getSupportFragmentManager(), "alertDialogFragment");
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -221,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Change to temperature activity
-    public void temperatureActivityIntent(Button temperatureButton) {
+    public void temperatureActivityIntent() {
         temperatureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Change to heartrate activity
-    public void heartRateActivityIntent(Button heartrateButton) {
+    public void heartRateActivityIntent() {
         heartrateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Change to position activity
-    public void positionActivityIntent(ImageView positionImageView) {
+    public void positionActivityIntent() {
         positionImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -254,7 +260,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        locationTextView.setOnClickListener(new View.OnClickListener() {
+//        locationTextView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
+//                intent.putExtra("dogID", currDog);
+//                startActivity(intent);
+//            }
+//        });
+        positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, PositionActivity.class);
@@ -262,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     //Dog position
@@ -289,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                         String ID = position.getDocumentID();
                         Log.i(TAG, "time: " + timestamp.toString() + " " + value.toString() + " " + ID);
 
-                        //locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
+                        locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -324,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Display longitude and latitude
                     locationTextView.setText("Latitude: " + latitudeGet + " Longitude: " + longitudeGet);
+                    //locationTextView.setText("View Location");
                     latestUpdateTextView.setText("Latest update: " + date);
                 }
             }
@@ -369,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
 
                             //Set heartbeat speed and count
                             heartPulsator.setCount(5);
-                            heartPulsator.setDuration((int) Math.round(value * 15));
+                            heartPulsator.setDuration((int) Math.round(value * 10));
                             heartPulsator.start();
                         }
                     })
@@ -377,6 +393,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             heartRateTextView.setText("Heartrate: " + "NA");
+                            Log.e(TAG, "Heartrate: " + "NA");
                             latestUpdateTextView.setText("Latest update: " + "NA");
                         }
                     });
@@ -430,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
                         //Add new value to gauge
                         temperatureGauge2.setValue(0);
                         temperatureGuage2TextView.setText("NA" + "°C");
+                        Log.e(TAG, "NA" + "°C");
                         latestUpdateTextView.setText("Latest update: " + "NA");
                     }
                 });
@@ -483,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
                         //Add new value to gauge
                         temperatureGauge1.setValue(0);
                         temperatureGuage1TextView.setText("NA" + "°C");
+                        Log.e(TAG, "NA" + "°C");
                         latestUpdateTextView.setText("Latest update: " + "NA");
                     }
                 });

@@ -65,26 +65,10 @@ public class addDogDialogFragmentMainActivity extends DialogFragment {
         currentUserId = mAuth.getCurrentUser().getUid();
         Log.d(TAG, "User ID:" + currentUserId);
 
-        getCurrentUserEmail();  //Get email ONLY when user is passing from log in page to splash page
         setupUserList();    //Set up the user in the user/ database collection
         confirmDog();     //When button entered, dog added to dogs/ and reference added to users/
 
         return view;
-    }
-
-    //Get dog from main activity and pass to position activity
-    public void getCurrentUserEmail() {
-        userEmail = new String();
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            userEmail = bundle.getString("userEmail");
-            if (userEmail == null) {
-                Log.d(TAG, "Email:" + userEmail);
-            }
-            else {
-                Log.d(TAG, "Email not found.");
-            }
-        }
     }
 
     //Set up the user in the user/ database collection
@@ -167,7 +151,8 @@ public class addDogDialogFragmentMainActivity extends DialogFragment {
                                 Toast.makeText(getContext(), "Dog added", Toast.LENGTH_SHORT).show();
 
                                 //Reload activity to generate new dog to list on
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                Intent intent = new Intent(getContext(), MainActivity.class);
+                                intent.putExtra("dogID", dogName);  //Pass new dog name to main activity
                                 startActivity(intent);
                             }
                         })

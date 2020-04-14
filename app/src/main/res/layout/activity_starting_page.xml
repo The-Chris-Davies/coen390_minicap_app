@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/abeezee"
-        android:text="Select a dog"
+        android:text="Select or add a dog"
         android:textColor="#2196F3"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -51,16 +51,20 @@
 
     <Button
         android:id="@+id/signOut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="132dp"
+        android:layout_height="39dp"
         android:layout_marginTop="16dp"
+        android:background="@drawable/buttonshape"
+        android:fontFamily="@font/abeezee"
         android:onClick="signOut"
         android:text="Sign Out"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.154"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dogList" />
+        app:layout_constraintTop_toBottomOf="@+id/dogList"
+        app:layout_constraintVertical_bias="0.504" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addDogFloatingActionButton"
@@ -70,9 +74,8 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.638"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toEndOf="@+id/signOut"
         app:layout_constraintTop_toBottomOf="@+id/dogList"
-        app:layout_constraintVertical_bias="0.419"
         app:srcCompat="@drawable/ic_icon_select" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,26 +7,18 @@
     android:background="@android:color/background_light"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/heartrateButton"
-        android:layout_width="177dp"
-        android:layout_height="33dp"
-        android:background="@drawable/buttonshape"
-        android:elevation="10dp"
-        android:fontFamily="@font/abeezee"
-        android:shadowColor="#1198da"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="View statistics"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="46dp"
+        android:layout_height="43dp"
+        android:background="#FFFFFF"
+        android:src="@drawable/temperature_gauge"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.871"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.191" />
+        app:layout_constraintHorizontal_bias="0.422"
+        app:layout_constraintStart_toEndOf="@+id/imageView4"
+        app:layout_constraintTop_toTopOf="@+id/imageView4"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/temperatureExternalTextView"
@@ -35,7 +27,7 @@
         android:clickable="true"
         android:fontFamily="@font/abeezee"
         android:text="Internal"
-        android:textAlignment="textStart"
+        android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/temperatureGauge2"
@@ -53,11 +45,50 @@
         android:text="Processing Heartrate..."
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.532"
+        app:layout_constraintHorizontal_bias="0.597"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.095" />
+        app:layout_constraintVertical_bias="0.07" />
+
+    <pl.bclogic.pulsator4droid.library.PulsatorLayout
+        android:id="@+id/heartPulsator"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:background="@drawable/heart_symbol"
+        android:foreground="@drawable/heart_symbol"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/heartRateTextView"
+        app:layout_constraintHorizontal_bias="0.723"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.042"
+        app:pulse_color="#E33E7A"
+        app:pulse_count="4"
+        app:pulse_interpolator="Decelerate"
+        app:pulse_repeat="0"
+        app:pulse_startFromScratch="false"></pl.bclogic.pulsator4droid.library.PulsatorLayout>
+
+    <Button
+        android:id="@+id/heartrateButton"
+        android:layout_width="177dp"
+        android:layout_height="33dp"
+        android:background="@drawable/buttonshape"
+        android:elevation="10dp"
+        android:fontFamily="@font/abeezee"
+        android:shadowColor="#1198da"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="View statistics"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.884"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.173" />
 
     <TextView
         android:id="@+id/temperatureTextView"
@@ -66,6 +97,7 @@
         android:clickable="true"
         android:fontFamily="@font/abeezee"
         android:text="External"
+        android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/temperatureGauge1"
@@ -99,11 +131,11 @@
         android:paddingTop="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        app:gaugeEndValue="50"
         app:gaugePointEndColor="@color/colorAccent"
         app:gaugePointStartColor="@android:color/holo_blue_light"
         app:gaugeStartAngle="135"
-        app:gaugeStartValue="0"
+        app:gaugeEndValue="70"
+        app:gaugeStartValue="-70"
         app:gaugeStrokeCap="ROUND"
         app:gaugeStrokeColor="@color/colorListSelected"
         app:gaugeStrokeWidth="10dp"
@@ -124,11 +156,11 @@
         android:paddingTop="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
-        app:gaugeEndValue="70"
         app:gaugePointEndColor="@color/colorAccent"
         app:gaugePointStartColor="@android:color/holo_blue_light"
         app:gaugeStartAngle="135"
-        app:gaugeStartValue="-70"
+        app:gaugeEndValue="100"
+        app:gaugeStartValue="0"
         app:gaugeStrokeCap="ROUND"
         app:gaugeStrokeColor="@color/colorListSelected"
         app:gaugeStrokeWidth="10dp"
@@ -149,7 +181,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/temperatureGauge1"
         app:layout_constraintEnd_toEndOf="@+id/temperatureGauge1"
-        app:layout_constraintHorizontal_bias="0.531"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="@+id/temperatureGauge1"
         app:layout_constraintTop_toTopOf="@+id/temperatureGauge1"
         app:layout_constraintVertical_bias="0.46" />
@@ -189,38 +221,6 @@
         app:layout_constraintTop_toBottomOf="@+id/temperatureGauge1"
         app:layout_constraintVertical_bias="0.234" />
 
-    <pl.bclogic.pulsator4droid.library.PulsatorLayout
-        android:id="@+id/heartPulsator"
-        android:layout_width="54dp"
-        android:layout_height="51dp"
-        android:background="@drawable/heart_symbol"
-        android:foreground="@drawable/heart_symbol"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/heartRateTextView"
-        app:layout_constraintHorizontal_bias="0.709"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.079"
-        app:pulse_color="#E33E7A"
-        app:pulse_count="4"
-        app:pulse_interpolator="Decelerate"
-        app:pulse_repeat="0"
-        app:pulse_startFromScratch="false"></pl.bclogic.pulsator4droid.library.PulsatorLayout>
-
-    <ImageView
-        android:id="@+id/positionImageView"
-        android:layout_width="54dp"
-        android:layout_height="51dp"
-        android:elevation="100dp"
-        android:shadowRadius="15"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/locationTextView"
-        app:layout_constraintHorizontal_bias="0.53"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.326"
-        app:srcCompat="@drawable/map_logo" />
-
     <TextView
         android:id="@+id/locationTextView"
         android:layout_width="258dp"
@@ -228,12 +228,59 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/abeezee"
         android:gravity="center_vertical"
-        android:text="View Location"
+        android:text="Processing Location..."
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.326" />
+        app:layout_constraintVertical_bias="0.327" />
+
+    <ImageView
+        android:id="@+id/positionImageView"
+        android:layout_width="79dp"
+        android:layout_height="66dp"
+        android:elevation="100dp"
+        android:shadowRadius="15"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/locationTextView"
+        app:layout_constraintHorizontal_bias="0.534"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.312"
+        app:srcCompat="@drawable/map_logo" />
+
+    <Button
+        android:id="@+id/positionButton"
+        android:layout_width="177dp"
+        android:layout_height="33dp"
+        android:background="@drawable/buttonshape"
+        android:elevation="10dp"
+        android:fontFamily="@font/abeezee"
+        android:shadowColor="#1198da"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="View map"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.871"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.444" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="46dp"
+        android:layout_height="43dp"
+        android:src="@drawable/temperature_gauge"
+        app:layout_constraintBottom_toBottomOf="@+id/latestUpdateTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.571" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
