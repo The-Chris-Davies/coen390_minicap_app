@@ -53,15 +53,13 @@ public class MainActivity extends AppCompatActivity {
     protected TextView latestUpdateTextView;
     protected ImageView positionImageView;
 
-    //Guages and their texts
+    //Gauges and their texts
     protected CustomGauge temperatureGauge1;    //External temperature gauge
     protected CustomGauge temperatureGauge2;    //Internal temperature gauge
     protected TextView temperatureGuage1TextView;   //External temperature value for gauge
     protected TextView temperatureGuage2TextView;   //Interal temperature value for gauge
-    protected TextView welcomeTextView;
     protected Button temperatureButton;
     protected Button heartrateButton;
-//    protected Button positionButton;
     protected PulsatorLayout heartPulsator;     //Heart pulsator icon
 
     public static final String POSITION_TIMESTAMP = "timestamp";
@@ -99,9 +97,7 @@ public class MainActivity extends AppCompatActivity {
         temperatureExternalTextView = findViewById(R.id.temperatureExternalTextView);
         temperatureButton = findViewById(R.id.temperatureButton);
         heartrateButton = findViewById(R.id.heartrateButton);
-//        welcomeTextView = findViewById(R.id.welcomeTextView);
         positionImageView = findViewById(R.id.positionImageView);
-//        positionButton = findViewById(R.id.positionButton);
 
         //Guages, pulse layouts and their text views
         temperatureGauge1 = findViewById(R.id.temperatureGauge1);
@@ -129,15 +125,6 @@ public class MainActivity extends AppCompatActivity {
         temperatureActivityIntent(temperatureButton);
         heartRateActivityIntent(heartrateButton);
         positionActivityIntent(positionImageView);
-
-        //Todo: Create button for temperature, heartrate and position
-        //Todo: create registration fragment
-        //Todo: new path: UserID/user(1,2,3...)/dog/dog(1,2,3...)/position"
-        //Todo: new path: UserID/dog1/position"
-        //Todo: On Create initialize dog's ID and use it when referencing other collections (temp, heart, pos, etc.)
-        //Todo: Use USER'S dog document instead of HpwWiJSGHNbOgJtYi2jM
-
-        //Todo: Set NULL conditions for dogs and queries (so no crashing occurs)
 
         //Pass arguments from splash page to main activity -> generate dog path
         Bundle bundle = getIntent().getExtras();
@@ -300,6 +287,12 @@ public class MainActivity extends AppCompatActivity {
                         //locationTextView.setText("Latitude: " + value.getLatitude()+ " Longitude: " + value.getLongitude());
                         latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        latestUpdateTextView.setText("Latest update: " + "NA");
+                    }
                 });
     }
 
@@ -335,39 +328,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Dog heartrate query
     public void queryLatestHeartrateDocument() {
-//        Task<QuerySnapshot> heartQuery = heartRef
-//                .orderBy("timestamp", Query.Direction.DESCENDING)
-//                .limit(1)
-//                .get()
-//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments()
-//                                .get(queryDocumentSnapshots.size() - 1);
-//
-//                        //Get timestamp, Id and value
-//                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
-//                        String Id = documentSnapshot.getId();
-//                        heartrate.setTimestamp(timestamp);
-//                        heartrate.setDocumentID(Id);
-//                        //Check if value is string or number and then set to object
-//                        if(documentSnapshot.getData().get("value") instanceof String) {
-//                            Double value = Double.valueOf(documentSnapshot.getString("value"));
-//                            heartrate.setValue(value);
-//                        }
-//                        else {
-//                            Double value = documentSnapshot.getDouble("value");
-//                            heartrate.setValue(value);
-//                        }
-//
-//                        Double value = heartrate.getValue();
-//                        Log.i(TAG, "time: " + timestamp.toString() + " " + Double.toString(value) + " " + Id);
-//
-//                        heartRateTextView.setText("Heartrate: " + value + "BPM");
-//                        latestUpdateTextView.setText("Latest update: " + timestamp.toDate());
-//                    }
-//                });
-
             Task<QuerySnapshot> heartQuery = heartRef
                     .orderBy("timestamp", Query.Direction.DESCENDING)
                     .limit(1)
@@ -459,6 +419,15 @@ public class MainActivity extends AppCompatActivity {
                         temperatureGauge2.setValue((int)Math.round(value));
                         temperatureGuage2TextView.setText(value + "°C");
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Add new value to gauge
+                        temperatureGauge2.setValue(0);
+                        temperatureGuage2TextView.setText("NA" + "°C");
+                        latestUpdateTextView.setText("Latest update: " + "NA");
+                    }
                 });
     }
 
@@ -502,6 +471,15 @@ public class MainActivity extends AppCompatActivity {
                         //Add new value to gauge
                         temperatureGauge1.setValue((int)Math.round(value));
                         temperatureGuage1TextView.setText(value + "°C");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Add new value to gauge
+                        temperatureGauge1.setValue(0);
+                        temperatureGuage1TextView.setText("NA" + "°C");
+                        latestUpdateTextView.setText("Latest update: " + "NA");
                     }
                 });
     }

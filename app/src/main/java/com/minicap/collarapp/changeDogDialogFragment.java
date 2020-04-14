@@ -50,7 +50,6 @@ public class changeDogDialogFragment extends DialogFragment {
 
     protected void setupUI()
     {
-
         mDogRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {

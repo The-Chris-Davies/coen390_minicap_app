@@ -40,4 +40,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'pl.pawelkleczkowski.customgauge:CustomGauge:1.0.4'
     implementation 'pl.bclogic:pulsator4droid:1.0.3'
+    implementation 'com.google.android.material:material:1.1.0'
 }

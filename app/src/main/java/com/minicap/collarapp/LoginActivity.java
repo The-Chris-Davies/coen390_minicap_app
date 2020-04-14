@@ -26,6 +26,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText loginEmail;
     private EditText loginPass;
 
+    private String userEmail;
+    private String currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
         loginEmail = findViewById(R.id.loginEmail);
         loginPass = findViewById(R.id.loginPass);
+        userEmail = new String();
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -43,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void createAccount(View v) {
         String email = loginEmail.getText().toString();
+        userEmail = email;
         String password = loginEmail.getText().toString();
         if(email.isEmpty() || password.isEmpty()) {
             failMessageSignUp();
@@ -69,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void signIn(View V) {
         String email = loginEmail.getText().toString();
+        userEmail = email;
         String password = loginEmail.getText().toString();
         if(email.isEmpty() || password.isEmpty()) {
             failMessageLogIn();
@@ -105,6 +111,15 @@ public class LoginActivity extends AppCompatActivity {
     private void goToSplashPage() {
         //go to the splash page when authenticated
         Intent intent = new Intent(LoginActivity.this, SplashPage.class);
+        intent.putExtra("userEmail", userEmail);
         startActivity(intent);
+    }
+
+    //On phone back button pressed return to MainActivity
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(LoginActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

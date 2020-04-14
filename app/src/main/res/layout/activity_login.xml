@@ -74,6 +74,7 @@
         android:fontFamily="@font/abeezee"
         android:text="Log In or Sign Up"
         android:textAllCaps="false"
+        android:textColor="#2196F3"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
