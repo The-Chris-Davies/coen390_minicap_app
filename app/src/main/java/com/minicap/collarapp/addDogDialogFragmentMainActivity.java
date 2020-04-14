@@ -1,7 +1,6 @@
 package com.minicap.collarapp;
 
 import android.content.Intent;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,32 +13,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class addDogDialogFragment extends DialogFragment {
+public class addDogDialogFragmentMainActivity extends DialogFragment {
 
     private final String TAG = "addDogFragment";
 
@@ -178,7 +167,7 @@ public class addDogDialogFragment extends DialogFragment {
                                 Toast.makeText(getContext(), "Dog added", Toast.LENGTH_SHORT).show();
 
                                 //Reload activity to generate new dog to list on
-                                Intent intent = new Intent(getActivity(), SplashPage.class);
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
                                 startActivity(intent);
                             }
                         })

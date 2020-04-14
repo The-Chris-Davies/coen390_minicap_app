@@ -93,45 +93,45 @@ public class SplashPage extends AppCompatActivity {
         dogList = findViewById(R.id.dogList);
         dogLayoutManager = new LinearLayoutManager(this);
 
-//        mUserDogRef = FirebaseFirestore.getInstance().collection("users/" + user.getUid() + "/allowedDogs");
-//
-//        mUserDogRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    Log.d(TAG, "got user dogs: ");
-//                    allowedDogs = new ArrayList();
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        ((DocumentReference) document.getData().get("ref")).get()
-//                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                                        if (task.isSuccessful()) {
-//                                            DocumentSnapshot documentSnapshot = task.getResult();
-//                                            //if (documentSnapshot.exists()) {
-//                                                Log.d(TAG, "adding dog: " + documentSnapshot.getString("name"));
-//                                                allowedDogs.add(new Dog(documentSnapshot.getString("name"), documentSnapshot.getId()));
-//                                                dogAdapter = new DogListAdapter(SplashPage.this, allowedDogs);
-//                                                dogList.setAdapter(dogAdapter);
-//                                                dogList.setLayoutManager(dogLayoutManager);
-//                                                dogList.getAdapter().notifyDataSetChanged();   //probably not necessary
-//                                            //}
-//                                        } else {
-//                                            Log.d(TAG, "get failed with ", task.getException());
-//                                        }
-//                                    }
-//                        });
-//
-//                        Log.d(TAG, document.getId() + " => " + document.getData());
-//                    }
-//
-//                    Log.d(TAG, "dogs: " + allowedDogs);
-//
-//                } else {
-//                    Log.d(TAG, "Error getting documents: ", task.getException());
-//                }
-//            }
-//        });
+        mUserDogRef = FirebaseFirestore.getInstance().collection("users/" + user.getUid() + "/allowedDogs");
+
+        mUserDogRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "got user dogs: ");
+                    allowedDogs = new ArrayList();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        ((DocumentReference) document.getData().get("ref")).get()
+                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot documentSnapshot = task.getResult();
+                                            //if (documentSnapshot.exists()) {
+                                                Log.d(TAG, "adding dog: " + documentSnapshot.getString("name"));
+                                                allowedDogs.add(new Dog(documentSnapshot.getString("name"), documentSnapshot.getId()));
+                                                dogAdapter = new DogListAdapter(SplashPage.this, allowedDogs);
+                                                dogList.setAdapter(dogAdapter);
+                                                dogList.setLayoutManager(dogLayoutManager);
+                                                dogList.getAdapter().notifyDataSetChanged();   //probably not necessary
+                                            //}
+                                        } else {
+                                            Log.d(TAG, "get failed with ", task.getException());
+                                        }
+                                    }
+                        });
+
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                    }
+
+                    Log.d(TAG, "dogs: " + allowedDogs);
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
 
     }
     public void signOut(View view) {
