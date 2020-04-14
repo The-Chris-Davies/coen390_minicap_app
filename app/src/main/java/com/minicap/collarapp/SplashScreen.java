@@ -11,7 +11,7 @@ import pl.bclogic.pulsator4droid.library.PulsatorLayout;
 
 public class SplashScreen extends AppCompatActivity {
 
-    private static int SPLASH_TIME_OUT=5000;
+    private static int SPLASH_TIME_OUT=4600;
     protected PulsatorLayout pulsatorLogo1;
 
 
@@ -22,12 +22,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         pulsatorLogo1 = findViewById(R.id.pulsatorLogo1);
 
-
         pulsatorLogo1.start();
-
-        pulsatorLogo1.setCount(5);
-        pulsatorLogo1.setDuration(7000);
-
 
 
 
