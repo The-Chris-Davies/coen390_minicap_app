@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -39,7 +40,7 @@ import java.util.Map;
 
 public class addDogDialogFragment extends DialogFragment {
 
-    private final String TAG = "Change Dog Fragment";
+    private final String TAG = "addDogFragment";
 
     private CollectionReference mDogRef = FirebaseFirestore.getInstance().collection("dogs");
     private CollectionReference mUserRef = FirebaseFirestore.getInstance().collection("users");
@@ -49,7 +50,6 @@ public class addDogDialogFragment extends DialogFragment {
     //Add dog objects
     protected EditText addDogNameEditText;
     protected Button confirmDogButton;
-    protected SharedPreferenceHelper sharedPreferenceHelper;
 
     //Data to pass to database
     private String dogName;
@@ -71,14 +71,55 @@ public class addDogDialogFragment extends DialogFragment {
         addDogNameEditText = view.findViewById(R.id.addDogNameEditText);
         confirmDogButton = view.findViewById(R.id.confirmDogButton);
 
-        sharedPreferenceHelper = new SharedPreferenceHelper(getActivity());
-
         mAuth = FirebaseAuth.getInstance();
         currentUserId = mAuth.getCurrentUser().getUid();
         Log.d(TAG, "User ID:" + currentUserId);
 
         getCurrentUserEmail();
-        setupUI();
+        setupUserList();
+        confirmDog();
+
+
+        confirmDogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dogName = addDogNameEditText.getText().toString();
+                Log.d(TAG, "Dog name:" + dogName);
+
+                Map<String, String> data = new HashMap<>();
+                data.put("name", dogName);
+                data.put("battery", String.valueOf(100));
+
+                //See if user exists first, if not, add to list of users, if he does, then skip
+                db.collection("dogs")
+                        .add(data)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+
+                                //Todo: Add base values and timestamps for each collection using a hashmap of data for each
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("external_temperature");
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("temperature");
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("heartrate");
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("position");
+                                Toast.makeText(getContext(), "Dog added", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error adding dog to database", e);
+                            }
+                        });
+                }
+        });
+
         return view;
     }
 
@@ -88,78 +129,39 @@ public class addDogDialogFragment extends DialogFragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             userEmail = bundle.getString("userEmail");
-            Toast.makeText(getContext(), "User email: " + userEmail, Toast.LENGTH_SHORT).show();
+            if (userEmail == null) {
+                Log.d(TAG, "Email:" + userEmail);
+            }
+            else {
+                Log.d(TAG, "Email not found.");
+            }
         }
     }
 
-    protected void setupUI() {
-        //dogName = addDogNameEditText.getText().toString();  //Get name input on edit text
+    protected void setupUserList() {
 
-        //if (!dogName.isEmpty()) {
-
-            DocumentReference docEmailRef = db.collection("users").document(userEmail);
-            docEmailRef
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-
-                                if (!document.exists()) {
-                                    Map<String, String> data = new HashMap<>();
-                                    data.put("email", userEmail);
-                                    db.collection("users").document(userEmail).set(data);
-                                    Toast.makeText(getContext(), "Account added", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getContext(), "Account exists", Toast.LENGTH_SHORT).show();
-                                }
+        //See if user exists first, if not, add to list of users, if he does, then skip
+        DocumentReference docEmailRef = db.collection("users").document(currentUserId);
+        docEmailRef
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (!document.exists()) {
+                                Map<String, String> data = new HashMap<>();
+                                data.put("User ID: ", currentUserId);
+                                db.collection("users").document(currentUserId).set(data);
+                                Log.d(TAG, "Account added");
                             } else {
-                                Toast.makeText(getContext(), "Account already exists", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "Account exists");
                             }
+                        } else {
+                            Log.d(TAG, "Failed with: ", task.getException());
                         }
-                    });
-        //}
-
-
-//        Map<String, String> data = new HashMap<>();
-//        data.put("email", userEmail);
-//        db.collection("users")
-//                .add(data)
-//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                    @Override
-//                    public void onSuccess(DocumentReference documentReference) {
-//                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Error adding document", e);
-//                    }
-//                });
-
-
-
-
-//        CollectionReference userCollRef = db.collection("users");
-//        Query query = userCollRef.whereEqualTo("yourPropery", "yourValue");
-//        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        Log.d(TAG, document.getId() + " => " + document.getData());
-//                    }
-//                } else {
-//                    Log.d(TAG, "Error getting documents: ", task.getException());
-//                }
-//            }
-//        });
-
-
-
-
+                    }
+                });
     }
 
     public void confirmDog() {
@@ -167,35 +169,49 @@ public class addDogDialogFragment extends DialogFragment {
         confirmDogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Set initial values for name, age and id
-                String dogName = addDogNameEditText.getText().toString();
 
-                //Put values in editor to save later
-                //sharedPreferenceHelper.setProfileName()
+                dogName = addDogNameEditText.getText().toString();
+                Log.d(TAG, "Dog name:" + dogName);
 
-                //If inputs to name, age, and id are invalid
-                if (dogName.length() == 0) {
-                    addDogNameEditText.setError("Input valid name");
-                }
+                Map<String, String> data = new HashMap<>();
+                data.put("name", dogName);
+                data.put("battery", String.valueOf(100));
+
+                //See if user exists first, if not, add to list of users, if he does, then skip
+                db.collection("dogs")
+                        .add(data)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+
+                                //Todo: Add base values and timestamps for each collection using a hashmap of data for each
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("external_temperature");
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("temperature");
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("heartrate");
+                                db.collection("dogs").document(documentReference.getId())
+                                        .collection("position");
+                                Toast.makeText(getContext(), "Dog added", Toast.LENGTH_SHORT).show();
+
+
+                                //Todo: Add reference of dog to user collection "allowedDogs"
 
 
 
-                //After applying changes
-                //Save if inputs are valid
-                if (dogName.length() != 0) {
-                    //Save added values from editor
-                    //sharedPreferenceHelper.save();
-                    Toast toast = Toast.makeText(getActivity(), "Profile Saved", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-                //Do not save is incorrect inputs
-                else {
-                    Toast toast = Toast.makeText(getActivity(), "Dog not added", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            }
-        });
-    }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error adding dog to database", e);
+                            }
+                        });
+                    }
+            });
+        }
 
 
 }
