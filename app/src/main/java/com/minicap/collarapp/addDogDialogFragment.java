@@ -57,7 +57,7 @@ public class addDogDialogFragment extends DialogFragment {
     private String currUserEmail;
     private String currentUserId;
 
-    //private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;
 
     ArrayList<Dog> dogs;
 
@@ -73,9 +73,9 @@ public class addDogDialogFragment extends DialogFragment {
 
         sharedPreferenceHelper = new SharedPreferenceHelper(getActivity());
 
-//        mAuth = FirebaseAuth.getInstance();
-//        currentUserId = mAuth.getCurrentUser().toString();
-//        Log.i(TAG, "User ID:" + currentUserId);
+        mAuth = FirebaseAuth.getInstance();
+        currentUserId = mAuth.getCurrentUser().getUid();
+        Log.d(TAG, "User ID:" + currentUserId);
 
         getCurrentUserEmail();
         setupUI();
@@ -96,6 +96,7 @@ public class addDogDialogFragment extends DialogFragment {
         //dogName = addDogNameEditText.getText().toString();  //Get name input on edit text
 
         //if (!dogName.isEmpty()) {
+
             DocumentReference docEmailRef = db.collection("users").document(userEmail);
             docEmailRef
                     .get()
@@ -119,6 +120,7 @@ public class addDogDialogFragment extends DialogFragment {
                         }
                     });
         //}
+
 
 //        Map<String, String> data = new HashMap<>();
 //        data.put("email", userEmail);
