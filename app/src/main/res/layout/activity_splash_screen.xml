@@ -10,10 +10,10 @@
 
     <pl.bclogic.pulsator4droid.library.PulsatorLayout
         android:id="@+id/pulsatorLogo1"
-        android:layout_width="179dp"
-        android:layout_height="138dp"
-        android:background="@drawable/splashimage1"
-        android:foreground="@drawable/splashimage1"
+        android:layout_width="217dp"
+        android:layout_height="189dp"
+        android:background="@drawable/splashimage11"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
         app:layout_constraintVertical_bias="0.373"
         app:pulse_color="#E33E7A"
         app:pulse_count="4"
-        app:pulse_duration="5000"
+        app:pulse_duration="1000"
         app:pulse_interpolator="Linear"
         app:pulse_repeat="0"
         app:pulse_startFromScratch="false"></pl.bclogic.pulsator4droid.library.PulsatorLayout>
