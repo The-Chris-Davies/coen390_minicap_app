@@ -260,14 +260,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        locationTextView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, PositionActivity.class);
-//                intent.putExtra("dogID", currDog);
-//                startActivity(intent);
-//            }
-//        });
         positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

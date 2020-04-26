@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="4dp"
     tools:context=".AlertDialogFragment">
@@ -202,8 +202,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:background="@drawable/buttonshape"
+            android:fontFamily="@font/abeezee"
             android:text="Save Settings"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"/>
 
     </LinearLayout>
 
