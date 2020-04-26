@@ -11,7 +11,7 @@ public class SharedPreferenceHelper {
         sharedPreferences = context.getSharedPreferences("AlertPreferences", Context.MODE_PRIVATE );
     }
 
-    public void saveAlertSettings(Double intTempHighVal, Double intTempHighTime, Double intTempLowVal, Double intTempLowTime, Double extTempHighVal, Double extTempHighTime, Double extTempLowVal, Double extTempLowTime, Double battAlertVal, Double watchdogAlertVal) {
+    public void saveAlertSettings(Double intTempHighVal, Double intTempHighTime, Double intTempLowVal, Double intTempLowTime, Double extTempHighVal, Double extTempHighTime, Double extTempLowVal, Double extTempLowTime) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("intTempHighVal",intTempHighVal.toString());
         editor.putString("intTempHighTime",intTempHighTime.toString());
@@ -21,8 +21,6 @@ public class SharedPreferenceHelper {
         editor.putString("extTempHighTime",extTempHighTime.toString());
         editor.putString("extTempLowVal",extTempLowVal.toString());
         editor.putString("extTempLowTime",extTempLowTime.toString());
-        editor.putString("battAlertVal",battAlertVal.toString());
-        editor.putString("watchdogAlertVal",watchdogAlertVal.toString());
 
         editor.apply();
     }
